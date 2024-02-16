@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	conn := db.OpenDatabase()
+	conn, _ := db.OpenDatabase()
 	defer db.CloseDatabase(conn)
 
 	core.LoadNodeClassDefinitions(conn)

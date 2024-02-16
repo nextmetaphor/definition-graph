@@ -5,7 +5,7 @@ import (
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nextmetaphor/definition-graph/definition"
-	"log"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -89,57 +89,75 @@ const (
 	databaseName = "definition-graph.db"
 
 	databaseDriver = "sqlite3"
+
+	logCannotOpenDatabase                  = "cannot open database [%s]"
+	logCannotDropDatabase                  = "cannot drop database schema"
+	logCannotCreateDatabase                = "cannot create database schema"
+	logCannotCloseDatabase                 = "cannot close database"
+	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
+	logCannotPrepareNodeClassAttributeStmt = "cannot prepare NodeClassAttribute insert statement"
+	logCannotExecuteNodeClassStmt          = "cannot execute NodeClass insert statement, id=[%s], [%#v]"
+	logCannotExecuteNodeClassAttributeStmt = "cannot execute NodeClassAttribute insert statement, classid=[%s], id=[%s], [%#v]"
 )
 
-func OpenDatabase() *sql.DB {
+func OpenDatabase() (*sql.DB, error) {
 	db, err := sql.Open(databaseDriver, fmt.Sprintf("./%s", databaseName))
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Err(err).Msgf(logCannotOpenDatabase, databaseName)
+		return nil, err
 	}
 
 	_, err = db.Exec(dropDatabaseSchemeSQL)
 	if err != nil {
-		log.Printf("%q: %s\n", err, dropDatabaseSchemeSQL)
-		return nil
+		log.Error().Err(err).Msg(logCannotDropDatabase)
+		return nil, err
 	}
 
 	_, err = db.Exec(createDatabaseSchemaSQL)
 	if err != nil {
-		log.Printf("%q: %s\n", err, createDatabaseSchemaSQL)
-		return nil
+		log.Error().Err(err).Msg(logCannotCreateDatabase)
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }
 
 func CloseDatabase(db *sql.DB) error {
-	return db.Close()
+	err := db.Close()
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotCloseDatabase)
+	}
+	return err
 }
 
-func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecification) {
+func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecification) error {
 	stmt, err := db.Prepare(insertNodeClassSQL)
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Err(err).Msg(logCannotPrepareNodeClassStmt)
+		return err
 	}
 
 	attributeStmt, err := db.Prepare(insertNodeClassAttributeSQL)
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Err(err).Msg(logCannotPrepareNodeClassAttributeStmt)
+		return err
 	}
 
 	for id, classDefinition := range ncs.Definitions {
 		// create NodeClass record
 		_, err := stmt.Exec(id, classDefinition.Description)
 		if err != nil {
-			log.Fatal(err)
+			log.Warn().Err(err).Msgf(logCannotExecuteNodeClassStmt, id, classDefinition)
 		}
 
 		// create NodeClassAttribute records
 		for attributeID, attribute := range classDefinition.Attributes {
 			_, err := attributeStmt.Exec(attributeID, id, attribute.Description, attribute.Type, attribute.IsRequired)
 			if err != nil {
-				log.Fatal(err)
+				log.Warn().Err(err).Msgf(logCannotExecuteNodeClassAttributeStmt, attributeID, id, attribute)
 			}
 		}
 	}
+
+	return nil
 }

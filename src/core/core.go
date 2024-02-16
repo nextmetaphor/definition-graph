@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	logDebugCannotLoadFile           = "cannot load YAML file [%s]"
-	logDebugCannotParseFile          = "cannot parse file [%s]"
-	logDebugNoDefinitionsFoundInFile = "no definitions found in file [%s]"
+	logDebugCannotLoadFile           = "cannot load definition file [%s]"
+	logDebugCannotParseFile          = "cannot parse definition file [%s]"
+	logDebugNoDefinitionsFoundInFile = "no definitions found in definition file [%s]"
 )
 
 func LoadSpecificationFromFile(filename string) (*definition.NodeClassSpecification, error) {
