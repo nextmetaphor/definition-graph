@@ -8,7 +8,7 @@ type (
 	NodeClassAttribute struct {
 		Description string `yaml:"Description,omitempty"`
 		Type        string `yaml:"Type"`
-		IsRequired  int    `yaml:"IsRequired"`
+		IsRequired  bool   `yaml:"IsRequired"`
 	}
 
 	// NodeClassEdges TODO
@@ -18,8 +18,7 @@ type (
 	NodeClassEdge struct {
 		DestinationNodeClassID string `yaml:"DestinationNodeClass"`
 		Relationship           string `yaml:"Relationship"`
-		IsToDestination        int    `yaml:"IsToDestination"`
-		IsFromDestination      int    `yaml:"IsFromDestination"`
+		IsBidirectional        bool   `yaml:"IsBidirectional,omitempty"`
 	}
 
 	// NodeClassDefinition TODO

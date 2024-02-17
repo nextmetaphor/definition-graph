@@ -12,8 +12,7 @@ type (
 		DestinationNodeID      string `yaml:"DestinationNode"`
 		DestinationNodeClassID string `yaml:"DestinationNodeClass"`
 		Relationship           string `yaml:"Relationship"`
-		IsToDestination        int    `yaml:"IsToDestination"`
-		IsFromDestination      int    `yaml:"IsFromDestination"`
+		IsBidirectional        bool   `yaml:"IsBidirectional,omitempty"`
 	}
 
 	// NodeDefinition TODO

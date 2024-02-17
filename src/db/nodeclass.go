@@ -12,7 +12,7 @@ const (
 
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 
-	insertNodeClassEdgeSQL = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship, IsFromSource, IsFromDestination) values (?, ?, ?, ?, ?);`
+	insertNodeClassEdgeSQL = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
 
 	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
 	logCannotPrepareNodeClassAttributeStmt = "cannot prepare NodeClassAttribute insert statement"
@@ -50,7 +50,7 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 
 		// create NodeClassAttribute records
 		for attributeID, attribute := range classDefinition.Attributes {
-			_, err := attributeStmt.Exec(attributeID, classID, attribute.Description, attribute.Type, attribute.IsRequired)
+			_, err := attributeStmt.Exec(attributeID, classID, attribute.Description, attribute.Type, boolToInt(attribute.IsRequired))
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeClassAttributeStmt, attributeID, classID, attribute)
 			}
@@ -58,9 +58,15 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 
 		// create NodeClassEdge records
 		for _, edge := range classDefinition.Edges {
-			_, err := edgeStmt.Exec(classID, edge.DestinationNodeClassID, edge.Relationship, edge.IsToDestination, edge.IsFromDestination)
+			_, err := edgeStmt.Exec(classID, edge.DestinationNodeClassID, edge.Relationship)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeClassEdgeStmt, classID, edge)
+			}
+			if edge.IsBidirectional {
+				_, err := edgeStmt.Exec(edge.DestinationNodeClassID, classID, edge.Relationship)
+				if err != nil {
+					log.Warn().Err(err).Msgf(logCannotExecuteNodeClassEdgeStmt, classID, edge)
+				}
 			}
 		}
 	}

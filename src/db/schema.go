@@ -30,9 +30,7 @@ const (
 			SourceNodeClassID      TEXT    not null references NodeClass,
 			DestinationNodeClassID TEXT    not null references NodeClass,
 			Relationship           TEXT    not null,
-			IsFromSource           INTEGER not null,
-			IsFromDestination      INTEGER not null,
-			primary key (SourceNodeClassID, DestinationNodeClassID, Relationship, IsFromSource, IsFromDestination)
+			primary key (SourceNodeClassID, DestinationNodeClassID, Relationship)
 		);
 		
 		CREATE TABLE Node
@@ -60,25 +58,20 @@ const (
 			DestinationNodeID      TEXT    not null,
 			DestinationNodeClassID TEXT    not null references NodeClass,
 			Relationship           TEXT    not null,
-			IsFromSource           INTEGER not null,
-			IsFromDestination      INTEGER not null,
-			primary key (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship, IsFromSource,
-						 IsFromDestination),
+			primary key (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship),
 			foreign key (SourceNodeID, SourceNodeClassID) references Node (ID, NodeClassID),
 			foreign key (DestinationNodeID, DestinationNodeClassID) references Node (ID, NodeClassID),
-			foreign key (SourceNodeClassID, DestinationNodeClassID, Relationship, IsFromSource,
-						 IsFromDestination) references NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship,
-																	  IsFromSource, IsFromDestination)
+			foreign key (SourceNodeClassID, DestinationNodeClassID, Relationship) references NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship)
 		)
 	`
 
 	dropDatabaseSchemeSQL = `
-		drop table NodeEdge;
-		drop table NodeAttribute;
-		drop table Node;
-		drop table NodeClassEdge;
-		drop table NodeClassAttribute;
-		drop TABLE NodeClass;
+		DROP TABLE IF EXISTS NodeEdge;
+		DROP TABLE IF EXISTS NodeAttribute;
+		DROP TABLE IF EXISTS Node;
+		DROP TABLE IF EXISTS NodeClassEdge;
+		DROP TABLE IF EXISTS NodeClassAttribute;
+		DROP TABLE IF EXISTS NodeClass;
 	`
 
 	databaseName = "definition-graph.db"
@@ -91,6 +84,13 @@ const (
 	logCannotCloseDatabase     = "cannot close database"
 	logCannotEnableForeignKeys = "cannot enable foreign keys"
 )
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
 
 func OpenDatabase() (*sql.DB, error) {
 	db, err := sql.Open(databaseDriver, fmt.Sprintf("./%s", databaseName))

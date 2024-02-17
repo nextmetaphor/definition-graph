@@ -13,7 +13,7 @@ const (
 
 	insertNodeAttributeSQL = `INSERT INTO NodeAttribute (NodeID, NodeClassID, NodeClassAttributeID, Value) values (?, ?, ?, ?);`
 
-	insertNodeEdgeSQL = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship, IsFromSource, IsFromDestination) values (?, ?, ?, ?, ?, ?, ?);`
+	insertNodeEdgeSQL = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship) values (?, ?, ?, ?, ?);`
 
 	logCannotPrepareNodeStmt          = "cannot prepare Node insert statement"
 	logCannotPrepareNodeAttributeStmt = "cannot prepare NodeAttribute insert statement"
@@ -81,9 +81,15 @@ func StoreNodeSpecificationOnlyEdges(db *sql.DB, ns *definition.NodeSpecificatio
 		// create NodeClassEdge records
 		for _, edge := range node.Edges {
 			log.Debug().Msgf(logAboutToCreateNodeEdge, nodeClassID, nodeID, edge)
-			_, err := edgeStmt.Exec(nodeID, nodeClassID, edge.DestinationNodeID, edge.DestinationNodeClassID, edge.Relationship, edge.IsToDestination, edge.IsFromDestination)
+			_, err := edgeStmt.Exec(nodeID, nodeClassID, edge.DestinationNodeID, edge.DestinationNodeClassID, edge.Relationship)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeEdgeStmt, nodeClassID, edge)
+			}
+			if edge.IsBidirectional {
+				_, err := edgeStmt.Exec(edge.DestinationNodeID, edge.DestinationNodeClassID, nodeID, nodeClassID, edge.Relationship)
+				if err != nil {
+					log.Warn().Err(err).Msgf(logCannotExecuteNodeEdgeStmt, nodeClassID, edge)
+				}
 			}
 		}
 	}

@@ -18,5 +18,4 @@ Definitions:
       - DestinationNodeClass: "Person"
         DestinationNode: "dgilmour"
         Relationship: "EMPLOYS"
-        IsToDestination: 1
-        IsFromDestination: 0
+        IsBidirectional: false

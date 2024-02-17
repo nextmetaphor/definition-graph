@@ -5,9 +5,7 @@ Definitions:
       Name:
         Name: "Name of company"
         Type: "String"
-        IsRequired: 1
+        IsRequired: true
     Edges:
       - DestinationNodeClass: "Person"
         Relationship: "EMPLOYS"
-        IsToDestination: 1
-        IsFromDestination: 0

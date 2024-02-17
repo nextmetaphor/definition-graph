@@ -5,11 +5,11 @@ Definitions:
       Forename:
         Description: "Forename of person"
         Type: "String"
-        IsRequired: 0
+        IsRequired: false
       Surname:
         Description: "Surname of person"
         Type: "String"
-        IsRequired: 1
+        IsRequired: true
 
   Workload:
     Description: "A workload"
