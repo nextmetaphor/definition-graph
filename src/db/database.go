@@ -6,9 +6,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nextmetaphor/definition-graph/definition"
 	"github.com/rs/zerolog/log"
+	"strings"
 )
 
 const (
+	enableForeignKeysSQL    = `PRAGMA foreign_keys = ON`
 	createDatabaseSchemaSQL = `
 		CREATE TABLE NodeClass
 		(
@@ -86,6 +88,10 @@ const (
 
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 
+	insertNodeSQL = `INSERT INTO Node (ID, NodeClassID) values (?, ?);`
+
+	insertNodeAttributeSQL = `INSERT INTO NodeAttribute (NodeID, NodeClassID, NodeClassAttributeID, Value) values (?, ?, ?, ?);`
+
 	databaseName = "definition-graph.db"
 
 	databaseDriver = "sqlite3"
@@ -94,10 +100,15 @@ const (
 	logCannotDropDatabase                  = "cannot drop database schema"
 	logCannotCreateDatabase                = "cannot create database schema"
 	logCannotCloseDatabase                 = "cannot close database"
+	logCannotEnableForeignKeys             = "cannot enable foreign keys"
 	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
 	logCannotPrepareNodeClassAttributeStmt = "cannot prepare NodeClassAttribute insert statement"
 	logCannotExecuteNodeClassStmt          = "cannot execute NodeClass insert statement, id=[%s], [%#v]"
 	logCannotExecuteNodeClassAttributeStmt = "cannot execute NodeClassAttribute insert statement, classid=[%s], id=[%s], [%#v]"
+	logCannotPrepareNodeStmt               = "cannot prepare Node insert statement"
+	logCannotPrepareNodeAttributeStmt      = "cannot prepare NodeAttribute insert statement"
+	logCannotExecuteNodeStmt               = "cannot execute Node insert statement, id=[%s], [%#v]"
+	logCannotExecuteNodeAttributeStmt      = "cannot execute NodeAttribute insert statement, classid=[%s], id=[%s], [%#v]"
 )
 
 func OpenDatabase() (*sql.DB, error) {
@@ -110,6 +121,12 @@ func OpenDatabase() (*sql.DB, error) {
 	_, err = db.Exec(dropDatabaseSchemeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotDropDatabase)
+		return nil, err
+	}
+
+	_, err = db.Exec(enableForeignKeysSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotEnableForeignKeys)
 		return nil, err
 	}
 
@@ -155,6 +172,42 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 			_, err := attributeStmt.Exec(attributeID, id, attribute.Description, attribute.Type, attribute.IsRequired)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeClassAttributeStmt, attributeID, id, attribute)
+			}
+		}
+	}
+
+	return nil
+}
+
+func StoreNodeSpecification(db *sql.DB, ns *definition.NodeSpecification) error {
+	nodeStmt, err := db.Prepare(insertNodeSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotPrepareNodeStmt)
+		return err
+	}
+
+	attributeStmt, err := db.Prepare(insertNodeAttributeSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotPrepareNodeAttributeStmt)
+		return err
+	}
+
+	specClassID := strings.TrimSpace(ns.ClassID)
+	for nodeID, nodeDefinition := range ns.Definitions {
+		defClassID := strings.TrimSpace(nodeDefinition.ClassID)
+		if defClassID == "" {
+			defClassID = specClassID
+		}
+		_, err := nodeStmt.Exec(nodeID, defClassID)
+		if err != nil {
+			log.Warn().Err(err).Msgf(logCannotExecuteNodeStmt, nodeID, nodeDefinition)
+		}
+
+		// create NodeClassAttribute records
+		for attributeID, attribute := range nodeDefinition.Attributes {
+			_, err := attributeStmt.Exec(nodeID, defClassID, attributeID, attribute)
+			if err != nil {
+				log.Warn().Err(err).Msgf(logCannotExecuteNodeAttributeStmt, attributeID, nodeID, attribute)
 			}
 		}
 	}

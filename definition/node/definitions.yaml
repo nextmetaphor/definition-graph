@@ -1,0 +1,16 @@
+Class: "Person"
+Definitions:
+  jsmith:
+    Attributes:
+      Forename: "John"
+      Surname: "Smith"
+
+  dgilmour:
+    Attributes:
+      Forename: "David"
+      Surname: "Gilmour"
+
+  pinkfloyd:
+    Class: "Company"
+    Attributes:
+      Name: "Pink Floyd"

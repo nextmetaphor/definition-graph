@@ -6,3 +6,6 @@ Definitions:
         Name: "Name of company"
         Type: "String"
         IsRequired: 1
+
+  Workload:
+    Description: "A workload"

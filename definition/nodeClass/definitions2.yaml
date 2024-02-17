@@ -1,0 +1,8 @@
+Definitions:
+  Company:
+    Description: "A company"
+    Attributes:
+      Name:
+        Name: "Name of company"
+        Type: "String"
+        IsRequired: 1

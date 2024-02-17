@@ -82,6 +82,31 @@ func loadNodeClassSpecificationFromFile(filename string) (*definition.NodeClassS
 	return spec, nil
 }
 
+func loadNodeSpecificationFromFile(filename string) (*definition.NodeSpecification, error) {
+	file, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Warn().Err(err).Msg(fmt.Sprintf(logCannotLoadFile, filename))
+		return nil, err
+	}
+
+	spec := &definition.NodeSpecification{}
+	err = yaml.Unmarshal(file, spec)
+	if err != nil {
+		log.Warn().Err(err).Msg(fmt.Sprintf(logCannotParseFile, filename))
+
+		return nil, err
+	}
+
+	// if no definitions are found, return an error and a nil Specification
+	if len(spec.Definitions) == 0 {
+		log.Warn().Err(err).Msg(fmt.Sprintf(logNoDefinitionsFoundInFile, filename))
+		return nil, fmt.Errorf(logNoDefinitionsFoundInFile, filename)
+	}
+
+	// TODO debug
+	return spec, nil
+}
+
 func LoadNodeClassDefinitions(sourceDir []string, fileExtension string, conn *sql.DB) error {
 	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
 		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
@@ -90,6 +115,22 @@ func LoadNodeClassDefinitions(sourceDir []string, fileExtension string, conn *sq
 		if (err == nil) && (spec != nil) {
 			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
 			err = db.StoreNodeClassSpecification(conn, spec)
+		} else {
+			log.Warn().Msgf(logSkippingFile, filePath, err)
+		}
+
+		return nil
+	})
+}
+
+func LoadNodeDefinitions(sourceDir []string, fileExtension string, conn *sql.DB) error {
+	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
+		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
+
+		spec, err := loadNodeSpecificationFromFile(filePath)
+		if (err == nil) && (spec != nil) {
+			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
+			err = db.StoreNodeSpecification(conn, spec)
 		} else {
 			log.Warn().Msgf(logSkippingFile, filePath, err)
 		}

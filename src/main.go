@@ -9,5 +9,6 @@ func main() {
 	conn, _ := db.OpenDatabase()
 	defer db.CloseDatabase(conn)
 
-	core.LoadNodeClassDefinitions([]string{"."}, "yaml", conn)
+	core.LoadNodeClassDefinitions([]string{"../definition/nodeClass"}, "yaml", conn)
+	core.LoadNodeDefinitions([]string{"../definition/node"}, "yaml", conn)
 }

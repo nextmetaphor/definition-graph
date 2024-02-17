@@ -1,0 +1,15 @@
+Definitions:
+  Person:
+    Description: "A person"
+    Attributes:
+      Forename:
+        Description: "Forename of person"
+        Type: "String"
+        IsRequired: 0
+      Surname:
+        Description: "Surname of person"
+        Type: "String"
+        IsRequired: 1
+
+  Workload:
+    Description: "A workload"
