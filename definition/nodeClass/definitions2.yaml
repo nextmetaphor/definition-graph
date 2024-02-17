@@ -6,3 +6,8 @@ Definitions:
         Name: "Name of company"
         Type: "String"
         IsRequired: 1
+    Edges:
+      - DestinationNodeClass: "Person"
+        Relationship: "EMPLOYS"
+        IsToDestination: 1
+        IsFromDestination: 0

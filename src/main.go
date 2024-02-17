@@ -10,5 +10,6 @@ func main() {
 	defer db.CloseDatabase(conn)
 
 	core.LoadNodeClassDefinitions([]string{"../definition/nodeClass"}, "yaml", conn)
-	core.LoadNodeDefinitions([]string{"../definition/node"}, "yaml", conn)
+	core.LoadNodeDefinitionsWithoutEdges([]string{"../definition/node"}, "yaml", conn)
+	core.LoadNodeDefinitionsOnlyEdges([]string{"../definition/node"}, "yaml", conn)
 }

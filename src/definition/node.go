@@ -4,12 +4,28 @@ type (
 	// Attributes TODO
 	Attributes map[string]interface{}
 
+	// NodeEdges TODO
+	NodeEdges []NodeEdge
+
+	// NodeEdge TODO
+	NodeEdge struct {
+		DestinationNodeID      string `yaml:"DestinationNode"`
+		DestinationNodeClassID string `yaml:"DestinationNodeClass"`
+		Relationship           string `yaml:"Relationship"`
+		IsToDestination        int    `yaml:"IsToDestination"`
+		IsFromDestination      int    `yaml:"IsFromDestination"`
+	}
+
 	// NodeDefinition TODO
 	NodeDefinition struct {
 		// ClassID TODO
 		ClassID string `yaml:"Class"`
 
+		// Attributes TODO
 		Attributes Attributes `yaml:"Attributes"`
+
+		// Edges TODO
+		Edges NodeEdges `yaml:"Edges"`
 	}
 
 	// NodeSpecification TODO

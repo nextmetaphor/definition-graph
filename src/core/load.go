@@ -123,14 +123,30 @@ func LoadNodeClassDefinitions(sourceDir []string, fileExtension string, conn *sq
 	})
 }
 
-func LoadNodeDefinitions(sourceDir []string, fileExtension string, conn *sql.DB) error {
+func LoadNodeDefinitionsWithoutEdges(sourceDir []string, fileExtension string, conn *sql.DB) error {
 	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
 		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
 
 		spec, err := loadNodeSpecificationFromFile(filePath)
 		if (err == nil) && (spec != nil) {
 			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
-			err = db.StoreNodeSpecification(conn, spec)
+			err = db.StoreNodeSpecificationWithoutEdges(conn, spec)
+		} else {
+			log.Warn().Msgf(logSkippingFile, filePath, err)
+		}
+
+		return nil
+	})
+}
+
+func LoadNodeDefinitionsOnlyEdges(sourceDir []string, fileExtension string, conn *sql.DB) error {
+	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
+		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
+
+		spec, err := loadNodeSpecificationFromFile(filePath)
+		if (err == nil) && (spec != nil) {
+			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
+			err = db.StoreNodeSpecificationOnlyEdges(conn, spec)
 		} else {
 			log.Warn().Msgf(logSkippingFile, filePath, err)
 		}

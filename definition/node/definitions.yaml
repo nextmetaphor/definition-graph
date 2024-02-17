@@ -14,3 +14,9 @@ Definitions:
     Class: "Company"
     Attributes:
       Name: "Pink Floyd"
+    Edges:
+      - DestinationNodeClass: "Person"
+        DestinationNode: "dgilmour"
+        Relationship: "EMPLOYS"
+        IsToDestination: 1
+        IsFromDestination: 0
