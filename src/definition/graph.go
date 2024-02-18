@@ -1,5 +1,11 @@
 package definition
 
+import "fmt"
+
+const (
+	graphNodeIDFormatString = "%s:%s"
+)
+
 type (
 	Graph struct {
 		Nodes []GraphNode `json:"nodes"`
@@ -18,3 +24,7 @@ type (
 		Relationship string `json:"relationship"`
 	}
 )
+
+func GraphNodeID(nodeClassID, nodeID string) string {
+	return fmt.Sprintf(graphNodeIDFormatString, nodeClassID, nodeID)
+}

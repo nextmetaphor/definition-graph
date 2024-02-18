@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	insertNodeSQL = `INSERT INTO GraphNode (ID, NodeClassID) values (?, ?);`
-
+	insertNodeSQL          = `INSERT INTO Node (ID, NodeClassID) values (?, ?);`
 	insertNodeAttributeSQL = `INSERT INTO NodeAttribute (NodeID, NodeClassID, NodeClassAttributeID, Value) values (?, ?, ?, ?);`
-
-	insertNodeEdgeSQL = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship) values (?, ?, ?, ?, ?);`
+	insertNodeEdgeSQL      = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship) values (?, ?, ?, ?, ?);`
+	selectNodeSQL          = `SELECT ID, NodeClassID from Node`
+	selectNodeEdgeSQL      = `SELECT SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship from NodeEdge`
 
 	logCannotPrepareNodeStmt          = "cannot prepare GraphNode insert statement"
 	logCannotPrepareNodeAttributeStmt = "cannot prepare NodeAttribute insert statement"
@@ -24,6 +24,8 @@ const (
 	logAboutToCreateNode              = "about to create GraphNode, id=[%s], [%#v]"
 	logAboutToCreateNodeAttribute     = "about to create NodeAttribute, classid=[%s], id=[%s], [%#v]"
 	logAboutToCreateNodeEdge          = "about to create NodeEdge, classid=[%s], nodeid=[%s], [%#v]"
+	logCannotQueryNodeSelectStmt      = "cannot query Node select statement"
+	logCannotQueryNodeEdgeSelectStmt  = "cannot query NodeEdge select statement"
 )
 
 func StoreNodeSpecificationWithoutEdges(db *sql.DB, ns *definition.NodeSpecification) error {
@@ -95,4 +97,46 @@ func StoreNodeSpecificationOnlyEdges(db *sql.DB, ns *definition.NodeSpecificatio
 	}
 
 	return nil
+}
+
+func SelectNodeGraph(db *sql.DB) (graph definition.Graph, err error) {
+	nodeRows, err := db.Query(selectNodeSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
+		return
+	}
+	defer nodeRows.Close()
+
+	for nodeRows.Next() {
+		var node definition.GraphNode
+		var nodeID, classID string
+		if err = nodeRows.Scan(&nodeID, &classID); err != nil {
+			return
+		}
+		node.ID = definition.GraphNodeID(classID, nodeID)
+		node.Class = classID
+		node.Description = node.ID
+		graph.Nodes = append(graph.Nodes, node)
+	}
+
+	linkRows, err := db.Query(selectNodeEdgeSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotQueryNodeEdgeSelectStmt)
+		return
+	}
+	defer linkRows.Close()
+
+	for linkRows.Next() {
+		var link definition.GraphLink
+		var sourceNodeID, sourceNodeClassID, destinationNodeID, destinationNodeClassID string
+		if err = linkRows.Scan(&sourceNodeID, &sourceNodeClassID, &destinationNodeID, &destinationNodeClassID, &link.Relationship); err != nil {
+			return
+		}
+		link.Source = definition.GraphNodeID(sourceNodeClassID, sourceNodeID)
+		link.Target = definition.GraphNodeID(destinationNodeClassID, destinationNodeID)
+
+		graph.Links = append(graph.Links, link)
+	}
+
+	return
 }

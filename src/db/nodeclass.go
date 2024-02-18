@@ -11,9 +11,8 @@ const (
 	insertNodeClassSQL          = `INSERT INTO NodeClass (ID, Description) values (?, ?);`
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
-
-	selectNodeClassSQL     = `SELECT ID, Description from NodeClass`
-	selectNodeClassEdgeSQL = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
+	selectNodeClassSQL          = `SELECT ID, Description from NodeClass`
+	selectNodeClassEdgeSQL      = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
 
 	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
 	logCannotPrepareNodeClassAttributeStmt = "cannot prepare NodeClassAttribute insert statement"

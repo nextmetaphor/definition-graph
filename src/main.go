@@ -16,4 +16,7 @@ func main() {
 
 	b, _ := core.SelectNodeClassGraph(conn)
 	fmt.Println(string(b))
+
+	b, _ = core.SelectNodeGraph(conn)
+	fmt.Println(string(b))
 }
