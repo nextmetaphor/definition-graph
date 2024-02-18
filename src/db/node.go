@@ -9,19 +9,19 @@ import (
 )
 
 const (
-	insertNodeSQL = `INSERT INTO Node (ID, NodeClassID) values (?, ?);`
+	insertNodeSQL = `INSERT INTO GraphNode (ID, NodeClassID) values (?, ?);`
 
 	insertNodeAttributeSQL = `INSERT INTO NodeAttribute (NodeID, NodeClassID, NodeClassAttributeID, Value) values (?, ?, ?, ?);`
 
 	insertNodeEdgeSQL = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship) values (?, ?, ?, ?, ?);`
 
-	logCannotPrepareNodeStmt          = "cannot prepare Node insert statement"
+	logCannotPrepareNodeStmt          = "cannot prepare GraphNode insert statement"
 	logCannotPrepareNodeAttributeStmt = "cannot prepare NodeAttribute insert statement"
 	logCannotPrepareNodeEdgeStmt      = "cannot prepare NodeEdge insert statement"
-	logCannotExecuteNodeStmt          = "cannot execute Node insert statement, id=[%s], [%#v]"
+	logCannotExecuteNodeStmt          = "cannot execute GraphNode insert statement, id=[%s], [%#v]"
 	logCannotExecuteNodeAttributeStmt = "cannot execute NodeAttribute insert statement, classid=[%s], id=[%s], [%#v]"
 	logCannotExecuteNodeEdgeStmt      = "cannot execute NodeEdge insert statement, classid=[%s], [%#v]"
-	logAboutToCreateNode              = "about to create Node, id=[%s], [%#v]"
+	logAboutToCreateNode              = "about to create GraphNode, id=[%s], [%#v]"
 	logAboutToCreateNodeAttribute     = "about to create NodeAttribute, classid=[%s], id=[%s], [%#v]"
 	logAboutToCreateNodeEdge          = "about to create NodeEdge, classid=[%s], nodeid=[%s], [%#v]"
 )
