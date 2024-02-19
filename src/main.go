@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"github.com/nextmetaphor/definition-graph/api"
 	"github.com/nextmetaphor/definition-graph/core"
 	"github.com/nextmetaphor/definition-graph/db"
 )
@@ -14,9 +14,5 @@ func main() {
 	core.LoadNodeDefinitionsWithoutEdges([]string{"../definition/node"}, "yaml", conn)
 	core.LoadNodeDefinitionsOnlyEdges([]string{"../definition/node"}, "yaml", conn)
 
-	b, _ := core.SelectNodeClassGraph(conn)
-	fmt.Println(string(b))
-
-	b, _ = core.SelectNodeGraph(conn)
-	fmt.Println(string(b))
+	api.Listen(conn)
 }
