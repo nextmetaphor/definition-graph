@@ -11,57 +11,74 @@ const (
 	createDatabaseSchemaSQL = `
 		CREATE TABLE NodeClass
 		(
-			ID          TEXT not null primary key,
-			Description TEXT
+			ID          TEXT NOT NULL,
+			Namespace	TEXT NOT NULL  DEFAULT "",
+			Description TEXT,
+			primary key (ID, Namespace)
 		);
 		
 		CREATE TABLE NodeClassAttribute
 		(
-			ID          TEXT    not null,
-			NodeClassID TEXT    not null references NodeClass,
-			Type        TEXT    not null,
-			IsRequired  INTEGER not null,
-			Description TEXT,
-			primary key (ID, NodeClassID)
+			ID          		TEXT    NOT NULL,
+			NodeClassID 		TEXT    NOT NULL,
+			NodeClassNamespace 	TEXT	NOT NULL  DEFAULT "", 
+			Type        		TEXT    NOT NULL,
+			IsRequired  		INTEGER NOT NULL,
+			Description 		TEXT,
+			primary key (ID, NodeClassID, NodeClassNamespace),
+			foreign key (NodeClassID, NodeClassNamespace) references NodeClass (ID, Namespace)
 		);
 		
 		CREATE TABLE NodeClassEdge
 		(
-			SourceNodeClassID      TEXT    not null references NodeClass,
-			DestinationNodeClassID TEXT    not null references NodeClass,
-			Relationship           TEXT    not null,
-			primary key (SourceNodeClassID, DestinationNodeClassID, Relationship)
+			SourceNodeClassID      			TEXT    NOT NULL,
+			SourceNodeClassNamespace 		TEXT	NOT NULL  DEFAULT "",
+			DestinationNodeClassID 			TEXT    NOT NULL,
+			DestinationNodeClassNamespace	TEXT	NOT NULL  DEFAULT "",
+			Relationship           			TEXT    NOT NULL,
+			primary key (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship),
+			foreign key (SourceNodeClassID, SourceNodeClassNamespace) references NodeClass (ID, Namespace),
+			foreign key (DestinationNodeClassID, DestinationNodeClassNamespace) references NodeClass (ID, Namespace)
 		);
 		
 		CREATE TABLE Node
 		(
-			ID          TEXT not null,
-			NodeClassID TEXT references NodeClass,
-			primary key (ID, NodeClassID)
+			ID          		TEXT NOT NULL,
+			NodeClassID 		TEXT NOT NULL,
+			NodeClassNamespace	TEXT NOT NULL  DEFAULT "",
+			primary key (ID, NodeClassID, NodeClassNamespace),
+			foreign key (NodeClassID, NodeClassNamespace) references NodeClass (ID, Namespace)
 		);
 		
 		CREATE TABLE NodeAttribute
 		(
-			NodeID               TEXT not null,
-			NodeClassID          TEXT not null,
-			NodeClassAttributeID TEXT not null,
-			Value                TEXT not null,
-			primary key (NodeID, NodeClassID, NodeClassAttributeID),
-			foreign key (NodeID, NodeClassID) references Node (ID, NodeClassID),
-			foreign key (NodeClassAttributeID, NodeClassID) references NodeClassAttribute (ID, NodeClassID)
+			NodeID					TEXT NOT NULL,
+			NodeClassID          	TEXT NOT NULL,
+			NodeClassNamespace		TEXT NOT NULL DEFAULT "",
+			NodeClassAttributeID 	TEXT NOT NULL,
+			Value                	TEXT NOT NULL,
+			primary key (NodeID, NodeClassID, NodeClassNamespace, NodeClassAttributeID),
+			foreign key (NodeClassID, NodeClassNamespace) references NodeClass (ID, Namespace),
+			foreign key (NodeID, NodeClassID, NodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace),
+			foreign key (NodeClassAttributeID, NodeClassID, NodeClassNamespace) references NodeClassAttribute (ID, NodeClassID, NodeClassNamespace)
 		);
 		
 		CREATE TABLE NodeEdge
 		(
-			SourceNodeID           TEXT    not null,
-			SourceNodeClassID      TEXT    not null references NodeClass,
-			DestinationNodeID      TEXT    not null,
-			DestinationNodeClassID TEXT    not null references NodeClass,
-			Relationship           TEXT    not null,
-			primary key (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship),
-			foreign key (SourceNodeID, SourceNodeClassID) references Node (ID, NodeClassID),
-			foreign key (DestinationNodeID, DestinationNodeClassID) references Node (ID, NodeClassID),
-			foreign key (SourceNodeClassID, DestinationNodeClassID, Relationship) references NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship)
+			SourceNodeID					TEXT    NOT NULL,
+			SourceNodeClassID				TEXT    NOT NULL,
+			SourceNodeClassNamespace 		TEXT	NOT NULL DEFAULT "",
+			DestinationNodeID				TEXT    NOT NULL,
+			DestinationNodeClassID			TEXT    NOT NULL,
+			DestinationNodeClassNamespace	TEXT	NOT NULL DEFAULT "",
+			Relationship           			TEXT    NOT NULL,
+			primary key (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship),
+			foreign key (SourceNodeClassID, SourceNodeClassNamespace) references NodeClass (ID, Namespace),
+			foreign key (DestinationNodeClassID, DestinationNodeClassNamespace) references NodeClass (ID, Namespace),
+			foreign key (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace),
+			foreign key (DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace),
+			foreign key (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) references NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship)
+		
 		)
 	`
 

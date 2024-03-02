@@ -10,6 +10,16 @@ Definitions:
       Forename: "David"
       Surname: "Gilmour"
 
+  nmason:
+    Attributes:
+      Forename: "Nick"
+      Surname: "Mason"
+
+  rwright:
+    Attributes:
+      Forename: "Richard"
+      Surname: "Wright"
+
   pinkfloyd:
     Class: "Company"
     Attributes:
@@ -17,5 +27,13 @@ Definitions:
     Edges:
       - DestinationNodeClass: "Person"
         DestinationNode: "dgilmour"
+        Relationship: "EMPLOYS"
+        IsBidirectional: false
+      - DestinationNodeClass: "Person"
+        DestinationNode: "nmason"
+        Relationship: "EMPLOYS"
+        IsBidirectional: false
+      - DestinationNodeClass: "Person"
+        DestinationNode: "rwright"
         Relationship: "EMPLOYS"
         IsBidirectional: false
