@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/nextmetaphor/definition-graph/data"
 	"github.com/nextmetaphor/definition-graph/definition"
 	"github.com/rs/zerolog/log"
 )
@@ -74,6 +75,25 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 	}
 
 	return nil
+}
+
+func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
+	nodeClassRows, err := db.Query(selectNodeClassSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
+		return
+	}
+	defer nodeClassRows.Close()
+
+	for nodeClassRows.Next() {
+		var nodeClass data.NodeClass
+		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Description); err != nil {
+			return
+		}
+		nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
+	}
+
+	return
 }
 
 func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {

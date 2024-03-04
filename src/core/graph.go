@@ -8,9 +8,26 @@ import (
 )
 
 const (
-	logCannotSelectNodeClassGraph = "cannot select nodeclass graph"
+	logCannotSelectNodeClass      = "cannot select nodeClass"
+	logCannotSelectNodeClassGraph = "cannot select nodeClass graph"
 	logCannotSelectNodeGraph      = "cannot select node graph"
 )
+
+func SelectNodeClass(db *sql.DB) (b []byte, err error) {
+	graph, err := db2.SelectNodeClass(db)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotSelectNodeClass)
+		return
+	}
+
+	b, err = json.Marshal(graph)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotSelectNodeClass)
+		return
+	}
+
+	return
+}
 
 func SelectNodeClassGraph(db *sql.DB) (b []byte, err error) {
 	graph, err := db2.SelectNodeClassGraph(db)

@@ -8,13 +8,29 @@ import (
 )
 
 const (
+	pathNodeClass      = "/nodeClass"
+	pathNode           = "/node"
 	pathNodeClassGraph = "/nodeClassGraph"
-	pathNodeClass      = "/nodeGraph"
+	pathNodeGraph      = "/nodeGraph"
 )
 
 var (
 	db *sql.DB
 )
+
+func nodeClassHandler(w http.ResponseWriter, r *http.Request) {
+	b, err := core.SelectNodeClass(db)
+
+	//TODO - sort this out
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		fmt.Fprintf(w, string(b))
+	}
+}
 
 func nodeClassGraphHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := core.SelectNodeClassGraph(db)
@@ -40,8 +56,9 @@ func nodeGraphHandler(w http.ResponseWriter, r *http.Request) {
 }
 func Listen(conn *sql.DB) {
 	db = conn
+	http.HandleFunc(pathNodeClass, nodeClassHandler)
 	http.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)
-	http.HandleFunc(pathNodeClass, nodeGraphHandler)
+	http.HandleFunc(pathNodeGraph, nodeGraphHandler)
 
 	port := ":8080"
 	fmt.Printf("Server listening on port %s...\n", port)
