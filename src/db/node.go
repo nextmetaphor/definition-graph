@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/nextmetaphor/definition-graph/data"
 	"github.com/nextmetaphor/definition-graph/definition"
 	"github.com/rs/zerolog/log"
 	"strings"
@@ -137,6 +138,48 @@ func SelectNodeGraph(db *sql.DB) (graph definition.Graph, err error) {
 
 		graph.Links = append(graph.Links, link)
 	}
+
+	return
+}
+
+func SelectNodes(db *sql.DB) (graph data.Nodes, err error) {
+	nodeRows, err := db.Query(selectNodeSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
+		return
+	}
+	defer nodeRows.Close()
+
+	for nodeRows.Next() {
+		var node data.Node
+
+		var nodeID, classID string
+		if err = nodeRows.Scan(&nodeID, &classID); err != nil {
+			return
+		}
+		node.ID = definition.GraphNodeID(classID, nodeID)
+		node.NodeClassID = classID
+		graph.Nodes = append(graph.Nodes, node)
+	}
+	//
+	//linkRows, err := db.Query(selectNodeEdgeSQL)
+	//if err != nil {
+	//	log.Error().Err(err).Msg(logCannotQueryNodeEdgeSelectStmt)
+	//	return
+	//}
+	//defer linkRows.Close()
+	//
+	//for linkRows.Next() {
+	//	var link definition.GraphLink
+	//	var sourceNodeID, sourceNodeClassID, destinationNodeID, destinationNodeClassID string
+	//	if err = linkRows.Scan(&sourceNodeID, &sourceNodeClassID, &destinationNodeID, &destinationNodeClassID, &link.Relationship); err != nil {
+	//		return
+	//	}
+	//	link.Source = definition.GraphNodeID(sourceNodeClassID, sourceNodeID)
+	//	link.Target = definition.GraphNodeID(destinationNodeClassID, destinationNodeID)
+	//
+	//	graph.Links = append(graph.Links, link)
+	//}
 
 	return
 }

@@ -19,7 +19,21 @@ var (
 )
 
 func nodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := core.SelectNodeClass(db)
+	b, err := core.SelectNodeClasses(db)
+
+	//TODO - sort this out
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		fmt.Fprintf(w, string(b))
+	}
+}
+
+func nodeHandler(w http.ResponseWriter, r *http.Request) {
+	b, err := core.SelectNodes(db)
 
 	//TODO - sort this out
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -57,6 +71,7 @@ func nodeGraphHandler(w http.ResponseWriter, r *http.Request) {
 func Listen(conn *sql.DB) {
 	db = conn
 	http.HandleFunc(pathNodeClass, nodeClassHandler)
+	http.HandleFunc(pathNode, nodeHandler)
 	http.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)
 	http.HandleFunc(pathNodeGraph, nodeGraphHandler)
 

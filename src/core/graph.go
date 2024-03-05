@@ -13,14 +13,30 @@ const (
 	logCannotSelectNodeGraph      = "cannot select node graph"
 )
 
-func SelectNodeClass(db *sql.DB) (b []byte, err error) {
-	graph, err := db2.SelectNodeClass(db)
+func SelectNodeClasses(db *sql.DB) (b []byte, err error) {
+	nodeClasses, err := db2.SelectNodeClass(db)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotSelectNodeClass)
 		return
 	}
 
-	b, err = json.Marshal(graph)
+	b, err = json.Marshal(nodeClasses)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotSelectNodeClass)
+		return
+	}
+
+	return
+}
+
+func SelectNodes(db *sql.DB) (b []byte, err error) {
+	nodeClasses, err := db2.SelectNodes(db)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotSelectNodeClass)
+		return
+	}
+
+	b, err = json.Marshal(nodeClasses)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotSelectNodeClass)
 		return
