@@ -30,7 +30,7 @@ func SelectNodeClasses(db *sql.DB) (b []byte, err error) {
 }
 
 func SelectNodes(db *sql.DB) (b []byte, err error) {
-	nodeClasses, err := db2.SelectNodes(db)
+	nodeClasses, err := db2.SelectNodes(db, "Person", "")
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotSelectNodeClass)
 		return

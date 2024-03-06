@@ -14,6 +14,7 @@ const (
 	insertNodeAttributeSQL = `INSERT INTO NodeAttribute (NodeID, NodeClassID, NodeClassAttributeID, Value) values (?, ?, ?, ?);`
 	insertNodeEdgeSQL      = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship) values (?, ?, ?, ?, ?);`
 	selectNodeSQL          = `SELECT ID, NodeClassID from Node`
+	selectNodeSQLByClass   = `SELECT ID, NodeClassID from Node where NodeClassID=? and NodeClassNameSpace=?`
 	selectNodeEdgeSQL      = `SELECT SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship from NodeEdge`
 
 	logCannotPrepareNodeStmt          = "cannot prepare GraphNode insert statement"
@@ -142,8 +143,13 @@ func SelectNodeGraph(db *sql.DB) (graph definition.Graph, err error) {
 	return
 }
 
-func SelectNodes(db *sql.DB) (graph data.Nodes, err error) {
-	nodeRows, err := db.Query(selectNodeSQL)
+func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (graph data.Nodes, err error) {
+	var nodeRows *sql.Rows
+	if strings.TrimSpace(nodeClassID) == "" {
+		nodeRows, err = db.Query(selectNodeSQL)
+	} else {
+		nodeRows, err = db.Query(selectNodeSQLByClass, nodeClassID, nodeClassNamespace)
+	}
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
 		return
