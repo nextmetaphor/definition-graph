@@ -29,8 +29,8 @@ func SelectNodeClasses(db *sql.DB) (b []byte, err error) {
 	return
 }
 
-func SelectNodes(db *sql.DB) (b []byte, err error) {
-	nodeClasses, err := db2.SelectNodes(db, "Person", "")
+func SelectNodes(db *sql.DB, nodeClassNamespace string, nodeClass string) (b []byte, err error) {
+	nodeClasses, err := db2.SelectNodes(db, nodeClass, nodeClassNamespace)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotSelectNodeClass)
 		return

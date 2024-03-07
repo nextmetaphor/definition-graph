@@ -33,11 +33,14 @@ func nodeClassHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := core.SelectNodes(db)
+	nodeClassNamespace := r.Header.Get("nodeClassNamespace")
+	nodeClass := r.Header.Get("nodeClass")
+
+	b, err := core.SelectNodes(db, nodeClassNamespace, nodeClass)
 
 	//TODO - sort this out
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,nodeClassNamespace,nodeClass")
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
