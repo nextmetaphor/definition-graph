@@ -46,11 +46,7 @@ func SelectNodes(db *sql.DB, nodeClassNamespace string, nodeClass string) (b []b
 	return
 }
 func ReadNode(db *sql.DB, nodeClassNamespace string, nodeClassID string, nodeID string) (b []byte, err error) {
-	log.Debug().Msg(nodeClassNamespace)
-	log.Debug().Msg(nodeClassID)
-	log.Debug().Msg(nodeID)
-
-	node, err := db2.ReadNode(db, nodeClassNamespace, nodeClassID, nodeID)
+	node, err := db2.ReadNodeByID(db, nodeClassNamespace, nodeClassID, nodeID)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotReadNode)
 		return

@@ -24,7 +24,6 @@ func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readNodeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("I am here")
 	namespace := r.PathValue(paramNamespace)
 	nodeClassID := r.PathValue(paramNodeClass)
 	nodeID := r.PathValue(paramNode)

@@ -32,7 +32,6 @@ func Listen(conn *sql.DB) {
 	mux := http.NewServeMux()
 
 	// node functions
-	fmt.Println(pathReadNode)
 	mux.HandleFunc(pathReadNode, readNodeHandler)
 	mux.HandleFunc(pathSelectNode, selectNodeHandler)
 
