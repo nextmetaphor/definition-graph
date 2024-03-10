@@ -9,6 +9,7 @@ import (
 
 const (
 	logCannotSelectNodeClass      = "cannot select nodeClass"
+	logCannotReadNode             = "cannot read node"
 	logCannotSelectNodeClassGraph = "cannot select nodeClass graph"
 	logCannotSelectNodeGraph      = "cannot select node graph"
 )
@@ -39,6 +40,25 @@ func SelectNodes(db *sql.DB, nodeClassNamespace string, nodeClass string) (b []b
 	b, err = json.Marshal(nodeClasses)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotSelectNodeClass)
+		return
+	}
+
+	return
+}
+func ReadNode(db *sql.DB, nodeClassNamespace string, nodeClassID string, nodeID string) (b []byte, err error) {
+	log.Debug().Msg(nodeClassNamespace)
+	log.Debug().Msg(nodeClassID)
+	log.Debug().Msg(nodeID)
+
+	node, err := db2.ReadNode(db, nodeClassNamespace, nodeClassID, nodeID)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotReadNode)
+		return
+	}
+
+	b, err = json.Marshal(node)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotReadNode)
 		return
 	}
 

@@ -15,6 +15,7 @@ const (
 	insertNodeEdgeSQL      = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship) values (?, ?, ?, ?, ?);`
 	selectNodeSQL          = `SELECT ID, NodeClassID from Node`
 	selectNodeSQLByClass   = `SELECT ID, NodeClassID from Node where NodeClassID=? and NodeClassNameSpace=?`
+	selectNodeSQLByID      = `SELECT ID, NodeClassID from Node where NodeClassNameSpace=? and NodeClassID=? and ID=?`
 	selectNodeEdgeSQL      = `SELECT SourceNodeID, SourceNodeClassID, DestinationNodeID, DestinationNodeClassID, Relationship from NodeEdge`
 
 	logCannotPrepareNodeStmt          = "cannot prepare GraphNode insert statement"
@@ -150,6 +151,48 @@ func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (gra
 	} else {
 		nodeRows, err = db.Query(selectNodeSQLByClass, nodeClassID, nodeClassNamespace)
 	}
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
+		return
+	}
+	defer nodeRows.Close()
+
+	for nodeRows.Next() {
+		var node data.Node
+
+		var nodeID, classID string
+		if err = nodeRows.Scan(&nodeID, &classID); err != nil {
+			return
+		}
+		node.ID = definition.GraphNodeID(classID, nodeID)
+		node.NodeClassID = classID
+		graph.Nodes = append(graph.Nodes, node)
+	}
+	//
+	//linkRows, err := db.Query(selectNodeEdgeSQL)
+	//if err != nil {
+	//	log.Error().Err(err).Msg(logCannotQueryNodeEdgeSelectStmt)
+	//	return
+	//}
+	//defer linkRows.Close()
+	//
+	//for linkRows.Next() {
+	//	var link definition.GraphLink
+	//	var sourceNodeID, sourceNodeClassID, destinationNodeID, destinationNodeClassID string
+	//	if err = linkRows.Scan(&sourceNodeID, &sourceNodeClassID, &destinationNodeID, &destinationNodeClassID, &link.Relationship); err != nil {
+	//		return
+	//	}
+	//	link.Source = definition.GraphNodeID(sourceNodeClassID, sourceNodeID)
+	//	link.Target = definition.GraphNodeID(destinationNodeClassID, destinationNodeID)
+	//
+	//	graph.Links = append(graph.Links, link)
+	//}
+
+	return
+}
+func ReadNode(db *sql.DB, nodeClassNamespace string, nodeClassID string, nodeID string) (graph data.Nodes, err error) {
+	var nodeRows *sql.Rows
+	nodeRows, err = db.Query(selectNodeSQLByID, nodeClassNamespace, nodeClassID, nodeID)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
 		return

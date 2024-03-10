@@ -1,6 +1,6 @@
 module github.com/nextmetaphor/definition-graph
 
-go 1.21.7
+go 1.22.1
 
 require (
 	github.com/mattn/go-colorable v0.1.13 // indirect

@@ -12,7 +12,7 @@ const (
 		CREATE TABLE NodeClass
 		(
 			ID          TEXT NOT NULL,
-			Namespace	TEXT NOT NULL  DEFAULT "",
+			Namespace	TEXT NOT NULL  DEFAULT "default",
 			Description TEXT,
 			primary key (ID, Namespace)
 		);
@@ -21,7 +21,7 @@ const (
 		(
 			ID          		TEXT    NOT NULL,
 			NodeClassID 		TEXT    NOT NULL,
-			NodeClassNamespace 	TEXT	NOT NULL  DEFAULT "", 
+			NodeClassNamespace 	TEXT	NOT NULL  DEFAULT "default", 
 			Type        		TEXT    NOT NULL,
 			IsRequired  		INTEGER NOT NULL,
 			Description 		TEXT,
@@ -32,9 +32,9 @@ const (
 		CREATE TABLE NodeClassEdge
 		(
 			SourceNodeClassID      			TEXT    NOT NULL,
-			SourceNodeClassNamespace 		TEXT	NOT NULL  DEFAULT "",
+			SourceNodeClassNamespace 		TEXT	NOT NULL  DEFAULT "default",
 			DestinationNodeClassID 			TEXT    NOT NULL,
-			DestinationNodeClassNamespace	TEXT	NOT NULL  DEFAULT "",
+			DestinationNodeClassNamespace	TEXT	NOT NULL  DEFAULT "default",
 			Relationship           			TEXT    NOT NULL,
 			primary key (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship),
 			foreign key (SourceNodeClassID, SourceNodeClassNamespace) references NodeClass (ID, Namespace),
@@ -45,7 +45,7 @@ const (
 		(
 			ID          		TEXT NOT NULL,
 			NodeClassID 		TEXT NOT NULL,
-			NodeClassNamespace	TEXT NOT NULL  DEFAULT "",
+			NodeClassNamespace	TEXT NOT NULL  DEFAULT "default",
 			primary key (ID, NodeClassID, NodeClassNamespace),
 			foreign key (NodeClassID, NodeClassNamespace) references NodeClass (ID, Namespace)
 		);
@@ -54,7 +54,7 @@ const (
 		(
 			NodeID					TEXT NOT NULL,
 			NodeClassID          	TEXT NOT NULL,
-			NodeClassNamespace		TEXT NOT NULL DEFAULT "",
+			NodeClassNamespace		TEXT NOT NULL DEFAULT "default",
 			NodeClassAttributeID 	TEXT NOT NULL,
 			Value                	TEXT NOT NULL,
 			primary key (NodeID, NodeClassID, NodeClassNamespace, NodeClassAttributeID),
@@ -67,10 +67,10 @@ const (
 		(
 			SourceNodeID					TEXT    NOT NULL,
 			SourceNodeClassID				TEXT    NOT NULL,
-			SourceNodeClassNamespace 		TEXT	NOT NULL DEFAULT "",
+			SourceNodeClassNamespace 		TEXT	NOT NULL DEFAULT "default",
 			DestinationNodeID				TEXT    NOT NULL,
 			DestinationNodeClassID			TEXT    NOT NULL,
-			DestinationNodeClassNamespace	TEXT	NOT NULL DEFAULT "",
+			DestinationNodeClassNamespace	TEXT	NOT NULL DEFAULT "default",
 			Relationship           			TEXT    NOT NULL,
 			primary key (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship),
 			foreign key (SourceNodeClassID, SourceNodeClassNamespace) references NodeClass (ID, Namespace),
