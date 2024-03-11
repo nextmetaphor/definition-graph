@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	logCannotSelectNamespaces     = "cannot select namespaces"
 	logCannotSelectNodeClass      = "cannot select nodeClass"
 	logCannotReadNode             = "cannot read node"
 	logCannotSelectNodeClassGraph = "cannot select nodeClass graph"
@@ -24,6 +25,22 @@ func SelectNodeClasses(db *sql.DB) (b []byte, err error) {
 	b, err = json.Marshal(nodeClasses)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotSelectNodeClass)
+		return
+	}
+
+	return
+}
+
+func SelectNamespaces(db *sql.DB) (b []byte, err error) {
+	namespaces, err := db2.SelectNamespaces(db)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotSelectNamespaces)
+		return
+	}
+
+	b, err = json.Marshal(namespaces)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotSelectNamespaces)
 		return
 	}
 

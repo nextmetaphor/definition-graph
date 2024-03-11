@@ -7,16 +7,16 @@ import (
 )
 
 const (
-	paramNamespace = "namespace"
-	paramNodeClass = "nodeClass"
-	paramNode      = "node"
+	entityNamespace = "namespace"
+	entityNodeClass = "nodeClass"
+	entityNode      = "node"
 
-	pathNodeClass  = "/nodeClass"
-	pathSelectNode = "/node"
-
-	pathReadNamespace = "/namespace/{" + paramNamespace + "}"
-	pathReadNodeClass = pathReadNamespace + "/nodeClass/{" + paramNodeClass + "}"
-	pathReadNode      = pathReadNodeClass + "/node/{" + paramNode + "}/"
+	pathNamespaceRoot = "/" + entityNamespace
+	pathNamespace     = pathNamespaceRoot + "/{" + entityNamespace + "}"
+	pathNodeClassRoot = pathNamespace + "/" + entityNodeClass
+	pathNodeClass     = pathNodeClassRoot + "/{" + entityNodeClass + "}"
+	pathNodeRoot      = pathNodeClass + "/" + entityNode
+	pathNode          = pathNodeRoot + "/{" + entityNode + "}"
 
 	pathNodeClassGraph = "/nodeClassGraph"
 	pathNodeGraph      = "/nodeGraph"
@@ -32,11 +32,12 @@ func Listen(conn *sql.DB) {
 	mux := http.NewServeMux()
 
 	// node functions
-	mux.HandleFunc(pathReadNode, readNodeHandler)
-	mux.HandleFunc(pathSelectNode, selectNodeHandler)
+	mux.HandleFunc(pathNode, readNodeHandler)
+	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
 
 	// nodeClass functions
-	mux.HandleFunc(pathNodeClass, nodeClassHandler)
+	mux.HandleFunc(pathNodeClassRoot, nodeClassHandler)
+	mux.HandleFunc(pathNamespaceRoot, selectNamespaceHandler)
 
 	// graph functions
 	mux.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)

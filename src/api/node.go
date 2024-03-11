@@ -7,8 +7,8 @@ import (
 )
 
 func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
-	nodeClassNamespace := r.Header.Get("nodeClassNamespace")
-	nodeClass := r.Header.Get("nodeClass")
+	nodeClassNamespace := r.PathValue(entityNamespace)
+	nodeClass := r.PathValue(entityNodeClass)
 
 	b, err := core.SelectNodes(db, nodeClassNamespace, nodeClass)
 
@@ -24,9 +24,9 @@ func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readNodeHandler(w http.ResponseWriter, r *http.Request) {
-	namespace := r.PathValue(paramNamespace)
-	nodeClassID := r.PathValue(paramNodeClass)
-	nodeID := r.PathValue(paramNode)
+	namespace := r.PathValue(entityNamespace)
+	nodeClassID := r.PathValue(entityNodeClass)
+	nodeID := r.PathValue(entityNode)
 
 	b, err := core.ReadNode(db, namespace, nodeClassID, nodeID)
 

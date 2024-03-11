@@ -1,6 +1,14 @@
 package data
 
 type (
+	Namespaces struct {
+		Namespace []Namespace `json:"namespaces"`
+	}
+
+	Namespace struct {
+		Namespace string `json:"namespace"`
+	}
+
 	NodeClasses struct {
 		NodeClasses []NodeClass `json:"nodeClasses"`
 	}
