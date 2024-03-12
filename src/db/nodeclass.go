@@ -12,7 +12,7 @@ const (
 	insertNodeClassSQL          = `INSERT INTO NodeClass (ID, Description) values (?, ?);`
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
-	selectNodeClassSQL          = `SELECT ID, Description from NodeClass`
+	selectNodeClassSQL          = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
 	selectNamespacesSQL         = `SELECT DISTINCT Namespace from NodeClass`
 	selectNodeClassEdgeSQL      = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
 
@@ -89,7 +89,7 @@ func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
 
 	for nodeClassRows.Next() {
 		var nodeClass data.NodeClass
-		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Description); err != nil {
+		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err != nil {
 			return
 		}
 		nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)

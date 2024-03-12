@@ -8,18 +8,21 @@ import (
 
 const (
 	entityNamespace = "namespace"
-	entityNodeClass = "nodeClass"
+	entityNodeClass = "nodeclass"
 	entityNode      = "node"
+	entityGraph     = "graph"
 
 	pathNamespaceRoot = "/" + entityNamespace
 	pathNamespace     = pathNamespaceRoot + "/{" + entityNamespace + "}"
-	pathNodeClassRoot = pathNamespace + "/" + entityNodeClass
-	pathNodeClass     = pathNodeClassRoot + "/{" + entityNodeClass + "}"
-	pathNodeRoot      = pathNodeClass + "/" + entityNode
-	pathNode          = pathNodeRoot + "/{" + entityNode + "}"
 
-	pathNodeClassGraph = "/nodeClassGraph"
-	pathNodeGraph      = "/nodeGraph"
+	pathNodeClassRoot = "/" + entityNodeClass
+	pathNodeClass     = pathNodeClassRoot + "/{" + entityNodeClass + "}"
+
+	pathNodeRoot = "/" + entityNode
+	pathNode     = pathNodeRoot + "/{" + entityNode + "}"
+
+	pathNodeClassGraph = "/" + entityGraph + "/" + entityNodeClass
+	pathNodeGraph      = "/" + entityGraph + "/" + entityNode
 )
 
 var (
