@@ -219,12 +219,12 @@ func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nod
 
 	for attributeRows.Next() {
 		var attribute data.NodeAttribute
-		if err = attributeRows.Scan(&attribute.AttributeID, &attribute.Value); err != nil {
+		if err = attributeRows.Scan(&attribute.NodeClassAttributeID, &attribute.Value); err != nil {
 			return
 		}
 
 		// TODO - lazy
-		graph.Nodes[0].NodeAttributes = append(graph.Nodes[0].NodeAttributes, attribute)
+		graph.Nodes[0].Attributes = append(graph.Nodes[0].Attributes, attribute)
 	}
 
 	return

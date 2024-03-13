@@ -13,7 +13,7 @@ const (
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
 	selectNodeClassSQL          = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
-	selectNamespacesSQL         = `SELECT DISTINCT Namespace from NodeClass`
+	selectNamespacesSQL         = `SELECT DISTINCT Namespace from NodeClass order by Namespace`
 	selectNodeClassEdgeSQL      = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
 
 	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
@@ -79,7 +79,7 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 	return nil
 }
 
-func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
+func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) {
 	nodeClassRows, err := db.Query(selectNodeClassSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
@@ -128,25 +128,6 @@ func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
 			return
 		}
 		graph.Links = append(graph.Links, link)
-	}
-
-	return
-}
-
-func SelectNamespaces(db *sql.DB) (namespaces data.Namespaces, err error) {
-	namespaceRows, err := db.Query(selectNamespacesSQL)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotQueryNamespaceSelectStmt)
-		return
-	}
-	defer namespaceRows.Close()
-
-	for namespaceRows.Next() {
-		var nodeClass data.Namespace
-		if err = namespaceRows.Scan(&nodeClass.Namespace); err != nil {
-			return
-		}
-		namespaces.Namespace = append(namespaces.Namespace, nodeClass)
 	}
 
 	return
