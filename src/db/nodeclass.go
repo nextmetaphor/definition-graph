@@ -13,7 +13,6 @@ const (
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
 	selectNodeClassSQL          = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
-	selectNamespacesSQL         = `SELECT DISTINCT Namespace from NodeClass order by Namespace`
 	selectNodeClassEdgeSQL      = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
 
 	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
@@ -89,10 +88,9 @@ func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) 
 
 	for nodeClassRows.Next() {
 		var nodeClass data.NodeClass
-		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err != nil {
-			return
+		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err == nil {
+			nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
 		}
-		nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
 	}
 
 	return
