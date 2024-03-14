@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	insertNodeClassSQL          = `INSERT INTO NodeClass (ID, Description) values (?, ?);`
+	insertNodeClassSQL          = `INSERT INTO NodeClass (ID, Namespace, Description) values (?, ?, ?);`
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
 	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
 	selectNodeClassSQL          = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
@@ -91,6 +91,15 @@ func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) 
 		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err == nil {
 			nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
 		}
+	}
+
+	return
+}
+
+func CreateNodeClass(c *sql.DB, nc data.NodeClass) (e error) {
+	s, e := c.Prepare(insertNodeClassSQL)
+	if e == nil {
+		_, e = s.Exec(nc.ID, nc.Namespace, nc.Description)
 	}
 
 	return
