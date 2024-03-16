@@ -9,27 +9,22 @@ import (
 )
 
 const (
-	insertNodeClassSQL          = `INSERT INTO NodeClass (ID, Namespace, Description) values (?, ?, ?);`
-	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, NodeClassNamespace, Description, Type, IsRequired) values (?, ?, ?, ?, ?, ?);`
-	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) values (?, ?, ?, ?, ?);`
-	selectNodeClassSQL          = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
-	selectNodeClassEdgeSQL      = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
+	insertNodeClassSQL     = `INSERT INTO NodeClass (ID, Namespace, Description) values (?, ?, ?);`
+	insertNodeClassEdgeSQL = `INSERT INTO NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) values (?, ?, ?, ?, ?);`
+	selectNodeClassSQL     = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
+	selectNodeClassEdgeSQL = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
 
-	logCannotPrepareNodeClassStmt          = "cannot prepare NodeClass insert statement"
-	logCannotPrepareNodeClassAttributeStmt = "cannot prepare NodeClassAttribute insert statement"
-	logCannotPrepareNodeClassEdgeStmt      = "cannot prepare NodeClassEdge insert statement"
-	logCannotExecuteNodeClassStmt          = "cannot execute NodeClass insert statement, id=[%s], [%#v]"
-	logCannotExecuteNodeClassAttributeStmt = "cannot execute NodeClassAttribute insert statement, classid=[%s], id=[%s], [%#v]"
-	logCannotExecuteNodeClassEdgeStmt      = "cannot execute NodeClassEdge insert statement, classid=[%s], [%#v]"
-	logCannotQueryNodeClassSelectStmt      = "cannot query NodeClass select statement"
-	logCannotQueryNamespaceSelectStmt      = "cannot query Namespace select statement"
-	logCannotQueryNodeClassEdgeSelectStmt  = "cannot query NodeClassEdge select statement"
+	logCannotPrepareNodeClassStmt         = "cannot prepare NodeClass insert statement"
+	logCannotPrepareNodeClassEdgeStmt     = "cannot prepare NodeClassEdge insert statement"
+	logCannotExecuteNodeClassStmt         = "cannot execute NodeClass insert statement, id=[%s], [%#v]"
+	logCannotExecuteNodeClassEdgeStmt     = "cannot execute NodeClassEdge insert statement, classid=[%s], [%#v]"
+	logCannotQueryNodeClassSelectStmt     = "cannot query NodeClass select statement"
+	logCannotQueryNamespaceSelectStmt     = "cannot query Namespace select statement"
+	logCannotQueryNodeClassEdgeSelectStmt = "cannot query NodeClassEdge select statement"
 )
 
 // SelectNodeClass selects all NodeClass records from the database.
-// It does not return either the associated NodeClassAttribute or NodeClassEdge records: use the CreateNodeClass
-// func to access these.
-func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) {
+func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
 	nodeClassRows, err := db.Query(selectNodeClassSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
@@ -40,7 +35,7 @@ func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) 
 	for nodeClassRows.Next() {
 		var nodeClass data.NodeClass
 		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err == nil {
-			nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
+			nodeClasses = append(nodeClasses, nodeClass)
 		}
 	}
 
@@ -54,25 +49,25 @@ func CreateNodeClass(c *sql.DB, nc data.NodeClass) (e error) {
 	}
 	_, e = s.Exec(nc.ID, nc.Namespace, nc.Description)
 
-	if nc.Attributes != nil {
-		for _, attr := range nc.Attributes {
-			s, e = c.Prepare(insertNodeClassAttributeSQL)
-			if e != nil {
-				return
-			}
-			_, e = s.Exec(attr.ID, nc.ID, nc.Namespace, attr.Description, attr.Type, attr.IsRequired)
-		}
-	}
-
-	if nc.Edges != nil {
-		for _, edge := range nc.Edges {
-			s, e = c.Prepare(insertNodeClassEdgeSQL)
-			if e != nil {
-				return
-			}
-			_, e = s.Exec(edge.SourceNodeClassID, edge.SourceNodeClassNamespace, edge.DestinationNodeClassID, edge.DestinationNodeClassNamespace, edge.Relationship)
-		}
-	}
+	//if nc.Attributes != nil {
+	//	for _, attr := range nc.Attributes {
+	//		s, e = c.Prepare(insertNodeClassAttributeSQL)
+	//		if e != nil {
+	//			return
+	//		}
+	//		_, e = s.Exec(attr.ID, nc.ID, nc.Namespace, attr.Description, attr.Type, attr.IsRequired)
+	//	}
+	//}
+	//
+	//if nc.Edges != nil {
+	//	for _, edge := range nc.Edges {
+	//		s, e = c.Prepare(insertNodeClassEdgeSQL)
+	//		if e != nil {
+	//			return
+	//		}
+	//		_, e = s.Exec(edge.SourceNodeClassID, edge.SourceNodeClassNamespace, edge.DestinationNodeClassID, edge.DestinationNodeClassNamespace, edge.Relationship)
+	//	}
+	//}
 
 	return
 }
@@ -86,7 +81,7 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 
 	attributeStmt, err := db.Prepare(insertNodeClassAttributeSQL)
 	if err != nil {
-		log.Error().Err(err).Msg(logCannotPrepareNodeClassAttributeStmt)
+		log.Error().Err(err)
 		return err
 	}
 
@@ -107,7 +102,7 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 		for attributeID, attribute := range classDefinition.Attributes {
 			_, err := attributeStmt.Exec(attributeID, classID, attribute.Description, attribute.Type, boolToInt(attribute.IsRequired))
 			if err != nil {
-				log.Warn().Err(err).Msgf(logCannotExecuteNodeClassAttributeStmt, attributeID, classID, attribute)
+				log.Warn().Err(err)
 			}
 		}
 
