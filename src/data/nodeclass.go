@@ -14,10 +14,12 @@ type (
 	}
 
 	NodeClassAttribute struct {
-		ID          string `json:"id"`
-		Type        string `json:"type,omitempty"`
-		IsRequired  int    `json:"is-required,omitempty"`
-		Description string `json:"description,omitempty"`
+		ID                 string `json:"id"`
+		NodeClassID        string `json:"node-class-id,omitempty"`
+		NodeClassNamespace string `json:"node-class-namespace,omitempty"`
+		Type               string `json:"type,omitempty"`
+		IsRequired         int    `json:"is-required,omitempty"`
+		Description        string `json:"description,omitempty"`
 	}
 
 	NodeClassEdge struct {
@@ -25,5 +27,6 @@ type (
 		SourceNodeClassNamespace      string `json:"source-node-class-namespace"`
 		DestinationNodeClassID        string `json:"destination-node-class-id"`
 		DestinationNodeClassNamespace string `json:"destination-node-class-namespace"`
+		Relationship                  string `json:"relationship"`
 	}
 )

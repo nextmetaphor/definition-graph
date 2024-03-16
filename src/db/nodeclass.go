@@ -10,8 +10,8 @@ import (
 
 const (
 	insertNodeClassSQL          = `INSERT INTO NodeClass (ID, Namespace, Description) values (?, ?, ?);`
-	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, Description, Type, IsRequired) values (?, ?, ?, ?, ?);`
-	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, DestinationNodeClassID, Relationship) values (?, ?, ?);`
+	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, NodeClassNamespace, Description, Type, IsRequired) values (?, ?, ?, ?, ?, ?);`
+	insertNodeClassEdgeSQL      = `INSERT INTO NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) values (?, ?, ?, ?, ?);`
 	selectNodeClassSQL          = `SELECT ID, Namespace, Description from NodeClass order by Namespace, ID`
 	selectNodeClassEdgeSQL      = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
 
@@ -25,6 +25,57 @@ const (
 	logCannotQueryNamespaceSelectStmt      = "cannot query Namespace select statement"
 	logCannotQueryNodeClassEdgeSelectStmt  = "cannot query NodeClassEdge select statement"
 )
+
+// SelectNodeClass selects all NodeClass records from the database.
+// It does not return either the associated NodeClassAttribute or NodeClassEdge records: use the CreateNodeClass
+// func to access these.
+func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) {
+	nodeClassRows, err := db.Query(selectNodeClassSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
+		return
+	}
+	defer nodeClassRows.Close()
+
+	for nodeClassRows.Next() {
+		var nodeClass data.NodeClass
+		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err == nil {
+			nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
+		}
+	}
+
+	return
+}
+
+func CreateNodeClass(c *sql.DB, nc data.NodeClass) (e error) {
+	s, e := c.Prepare(insertNodeClassSQL)
+	if e != nil {
+		return
+	}
+	_, e = s.Exec(nc.ID, nc.Namespace, nc.Description)
+
+	if nc.Attributes != nil {
+		for _, attr := range nc.Attributes {
+			s, e = c.Prepare(insertNodeClassAttributeSQL)
+			if e != nil {
+				return
+			}
+			_, e = s.Exec(attr.ID, nc.ID, nc.Namespace, attr.Description, attr.Type, attr.IsRequired)
+		}
+	}
+
+	if nc.Edges != nil {
+		for _, edge := range nc.Edges {
+			s, e = c.Prepare(insertNodeClassEdgeSQL)
+			if e != nil {
+				return
+			}
+			_, e = s.Exec(edge.SourceNodeClassID, edge.SourceNodeClassNamespace, edge.DestinationNodeClassID, edge.DestinationNodeClassNamespace, edge.Relationship)
+		}
+	}
+
+	return
+}
 
 func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecification) error {
 	stmt, err := db.Prepare(insertNodeClassSQL)
@@ -76,33 +127,6 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 	}
 
 	return nil
-}
-
-func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClassesOuter, err error) {
-	nodeClassRows, err := db.Query(selectNodeClassSQL)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
-		return
-	}
-	defer nodeClassRows.Close()
-
-	for nodeClassRows.Next() {
-		var nodeClass data.NodeClass
-		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err == nil {
-			nodeClasses.NodeClasses = append(nodeClasses.NodeClasses, nodeClass)
-		}
-	}
-
-	return
-}
-
-func CreateNodeClass(c *sql.DB, nc data.NodeClass) (e error) {
-	s, e := c.Prepare(insertNodeClassSQL)
-	if e == nil {
-		_, e = s.Exec(nc.ID, nc.Namespace, nc.Description)
-	}
-
-	return
 }
 
 func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
