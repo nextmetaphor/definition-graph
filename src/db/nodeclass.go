@@ -93,14 +93,14 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 
 	for classID, classDefinition := range ncs.Definitions {
 		// create NodeClass record
-		_, err := stmt.Exec(classID, classDefinition.Description)
+		_, err := stmt.Exec(classID, "default", classDefinition.Description)
 		if err != nil {
 			log.Warn().Err(err).Msgf(logCannotExecuteNodeClassStmt, classID, classDefinition)
 		}
 
 		// create NodeClassAttribute records
 		for attributeID, attribute := range classDefinition.Attributes {
-			_, err := attributeStmt.Exec(attributeID, classID, attribute.Description, attribute.Type, boolToInt(attribute.IsRequired))
+			_, err := attributeStmt.Exec(attributeID, classID, "default", attribute.Description, attribute.Type, boolToInt(attribute.IsRequired))
 			if err != nil {
 				log.Warn().Err(err)
 			}
@@ -108,7 +108,8 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 
 		// create NodeClassEdge records
 		for _, edge := range classDefinition.Edges {
-			_, err := edgeStmt.Exec(classID, edge.DestinationNodeClassID, edge.Relationship)
+			// TODO - needs namespaces in definition files
+			_, err := edgeStmt.Exec(classID, "default", edge.DestinationNodeClassID, "default", edge.Relationship)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeClassEdgeStmt, classID, edge)
 			}
