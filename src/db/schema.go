@@ -38,7 +38,7 @@ const (
 			Relationship           			TEXT    NOT NULL,
 			primary key (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship),
 			foreign key (SourceNodeClassID, SourceNodeClassNamespace) references NodeClass (ID, Namespace) ON UPDATE CASCADE,
-			foreign key (DestinationNodeClassID, DestinationNodeClassNamespace) references NodeClass (ID, Namespace)
+			foreign key (DestinationNodeClassID, DestinationNodeClassNamespace) references NodeClass (ID, Namespace) ON UPDATE CASCADE
 		);
 		
 		CREATE TABLE Node
@@ -59,8 +59,8 @@ const (
 			Value                	TEXT NOT NULL,
 			primary key (NodeID, NodeClassID, NodeClassNamespace, NodeClassAttributeID),
 			foreign key (NodeClassID, NodeClassNamespace) references NodeClass (ID, Namespace) ON UPDATE CASCADE,
-			foreign key (NodeID, NodeClassID, NodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace),
-			foreign key (NodeClassAttributeID, NodeClassID, NodeClassNamespace) references NodeClassAttribute (ID, NodeClassID, NodeClassNamespace)
+			foreign key (NodeID, NodeClassID, NodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace) ON UPDATE CASCADE,
+			foreign key (NodeClassAttributeID, NodeClassID, NodeClassNamespace) references NodeClassAttribute (ID, NodeClassID, NodeClassNamespace) ON UPDATE CASCADE
 		);
 		
 		CREATE TABLE NodeEdge
@@ -74,10 +74,10 @@ const (
 			Relationship           			TEXT    NOT NULL,
 			primary key (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship),
 			foreign key (SourceNodeClassID, SourceNodeClassNamespace) references NodeClass (ID, Namespace) ON UPDATE CASCADE,
-			foreign key (DestinationNodeClassID, DestinationNodeClassNamespace) references NodeClass (ID, Namespace),
-			foreign key (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace),
-			foreign key (DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace),
-			foreign key (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) references NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship)
+			foreign key (DestinationNodeClassID, DestinationNodeClassNamespace) references NodeClass (ID, Namespace) ON UPDATE CASCADE,
+			foreign key (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace) ON UPDATE CASCADE,
+			foreign key (DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace) references Node (ID, NodeClassID, NodeClassNamespace) ON UPDATE CASCADE,
+			foreign key (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) references NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) ON UPDATE CASCADE
 		
 		)
 	`
