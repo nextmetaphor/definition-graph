@@ -145,6 +145,7 @@ func LoadNodeDefinitionsOnlyEdges(sourceDir []string, fileExtension string, conn
 
 		spec, err := loadNodeSpecificationFromFile(filePath)
 		if (err == nil) && (spec != nil) {
+
 			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
 			err = db.StoreNodeSpecificationOnlyEdges(conn, spec)
 		} else {

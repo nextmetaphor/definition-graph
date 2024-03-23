@@ -2,7 +2,9 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -28,6 +30,26 @@ const (
 var (
 	db *sql.DB
 )
+
+func writeHTTPResponse(data any, err error, w http.ResponseWriter, errorMessage string) {
+	var b []byte
+	if err == nil {
+		b, err = json.Marshal(data)
+	}
+
+	//TODO - sort this out
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if err != nil {
+		log.Error().Err(err).Msg(errorMessage)
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		if _, err = fmt.Fprintf(w, string(b)); err != nil {
+			log.Error().Err(err).Msg(errorMessage)
+		}
+	}
+}
 
 func Listen(conn *sql.DB) {
 	db = conn

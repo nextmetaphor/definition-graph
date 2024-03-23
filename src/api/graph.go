@@ -1,30 +1,21 @@
 package api
 
 import (
-	"fmt"
-	"github.com/nextmetaphor/definition-graph/core"
+	db2 "github.com/nextmetaphor/definition-graph/db"
 	"net/http"
 )
 
+const (
+	logCannotSelectNodeClassGraph = "cannot select nodeClass graph"
+	logCannotSelectNodeGraph      = "cannot select node graph"
+)
+
 func nodeClassGraphHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := core.SelectNodeClassGraph(db)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		fmt.Fprintf(w, string(b))
-	}
+	data, err := db2.SelectNodeClassGraph(db)
+	writeHTTPResponse(data, err, w, logCannotSelectNodeClassGraph)
 }
 
 func nodeGraphHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := core.SelectNodeGraph(db)
-
-	//TODO - sort this out
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		fmt.Fprintf(w, string(b))
-	}
+	data, err := db2.SelectNodeGraph(db)
+	writeHTTPResponse(data, err, w, logCannotSelectNodeGraph)
 }

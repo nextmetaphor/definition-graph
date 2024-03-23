@@ -1,26 +1,20 @@
 package api
 
 import (
-	"fmt"
-	"github.com/nextmetaphor/definition-graph/core"
+	db2 "github.com/nextmetaphor/definition-graph/db"
 	"net/http"
+)
+
+const (
+	logCannotReadNode = "cannot read node"
 )
 
 func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
 	nodeClassNamespace := r.Header.Get(entityNamespace)
 	nodeClass := r.Header.Get(entityNodeClass)
 
-	b, err := core.SelectNodes(db, nodeClassNamespace, nodeClass)
-
-	//TODO - sort this out
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,nodeClassNamespace,nodeClass")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		fmt.Fprintf(w, string(b))
-	}
+	data, err := db2.SelectNodes(db, nodeClass, nodeClassNamespace)
+	writeHTTPResponse(data, err, w, logCannotSelectNodeGraph)
 }
 
 func readNodeHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,15 +22,6 @@ func readNodeHandler(w http.ResponseWriter, r *http.Request) {
 	nodeClassID := r.Header.Get(entityNodeClass)
 	nodeID := r.PathValue(entityNode)
 
-	b, err := core.ReadNode(db, namespace, nodeClassID, nodeID)
-
-	//TODO - sort this out
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,nodeClassNamespace,nodeClass")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		fmt.Fprintf(w, string(b))
-	}
+	data, err := db2.ReadNodeByID(db, namespace, nodeClassID, nodeID)
+	writeHTTPResponse(data, err, w, logCannotReadNode)
 }

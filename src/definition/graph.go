@@ -15,6 +15,7 @@ type (
 	GraphNode struct {
 		ID          string `json:"id"`
 		Class       string `json:"class"`
+		Namespace   string `json:"namespace"`
 		Description string `json:"description"`
 	}
 

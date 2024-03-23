@@ -135,7 +135,7 @@ func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
 
 	for nodeRows.Next() {
 		var node definition.GraphNode
-		if err = nodeRows.Scan(&node.ID, &node.Description); err != nil {
+		if err = nodeRows.Scan(&node.ID, &node.Namespace, &node.Description); err != nil {
 			return
 		}
 		node.Class = node.ID
@@ -143,6 +143,7 @@ func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
 	}
 
 	linkRows, err := db.Query(selectNodeClassEdgeSQL)
+
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassEdgeSelectStmt)
 		return

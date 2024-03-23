@@ -1,35 +1,21 @@
 package api
 
 import (
-	"fmt"
-	"github.com/nextmetaphor/definition-graph/core"
+	db2 "github.com/nextmetaphor/definition-graph/db"
 	"net/http"
 )
 
+const (
+	logCannotSelectNamespaces = "cannot select namespaces"
+	logCannotSelectNodeClass  = "cannot select nodeClass"
+)
+
 func nodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := core.SelectNodeClasses(db)
-
-	//TODO - sort this out
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		fmt.Fprintf(w, string(b))
-	}
+	data, err := db2.SelectNodeClass(db)
+	writeHTTPResponse(data, err, w, logCannotSelectNodeClass)
 }
 
 func selectNamespaceHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := core.SelectNamespaces(db)
-
-	//TODO - sort this out
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		fmt.Fprintf(w, string(b))
-	}
+	data, err := db2.SelectNamespaces(db)
+	writeHTTPResponse(data, err, w, logCannotSelectNamespaces)
 }
