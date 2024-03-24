@@ -3,8 +3,8 @@ package db
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/nextmetaphor/definition-graph/data"
 	"github.com/nextmetaphor/definition-graph/definition"
+	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
 	"strings"
 )
@@ -147,7 +147,7 @@ func SelectNodeGraph(db *sql.DB) (graph definition.Graph, err error) {
 	return
 }
 
-func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (graph data.Nodes, err error) {
+func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (graph model.Nodes, err error) {
 	var nodeRows *sql.Rows
 	if strings.TrimSpace(nodeClassID) == "" {
 		nodeRows, err = db.Query(selectNodeSQL)
@@ -161,7 +161,7 @@ func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (gra
 	defer nodeRows.Close()
 
 	for nodeRows.Next() {
-		var node data.Node
+		var node model.Node
 
 		var nodeID, classID string
 		if err = nodeRows.Scan(&nodeID, &classID); err != nil {
@@ -193,7 +193,7 @@ func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (gra
 
 	return
 }
-func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nodeID string) (graph data.Nodes, err error) {
+func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nodeID string) (graph model.Nodes, err error) {
 	var nodeRows *sql.Rows
 	nodeRows, err = db.Query(selectNodeSQLByID, nodeClassNamespace, nodeClassID, nodeID)
 	if err != nil {
@@ -203,7 +203,7 @@ func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nod
 	defer nodeRows.Close()
 
 	for nodeRows.Next() {
-		var node data.Node
+		var node model.Node
 		if err = nodeRows.Scan(&node.ID, &node.NodeClassID, &node.NodeClassNamespace); err != nil {
 			return
 		}
@@ -218,7 +218,7 @@ func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nod
 	defer attributeRows.Close()
 
 	for attributeRows.Next() {
-		var attribute data.NodeAttribute
+		var attribute model.NodeAttribute
 		if err = attributeRows.Scan(&attribute.NodeClassAttributeID, &attribute.Value); err != nil {
 			return
 		}

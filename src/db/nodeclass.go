@@ -3,8 +3,8 @@ package db
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/nextmetaphor/definition-graph/data"
 	"github.com/nextmetaphor/definition-graph/definition"
+	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
 )
 
@@ -24,7 +24,7 @@ const (
 )
 
 // SelectNodeClass selects all NodeClass records from the database.
-func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
+func SelectNodeClass(db *sql.DB) (nodeClasses model.NodeClasses, err error) {
 	nodeClassRows, err := db.Query(selectNodeClassSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
@@ -33,7 +33,7 @@ func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
 	defer nodeClassRows.Close()
 
 	for nodeClassRows.Next() {
-		var nodeClass data.NodeClass
+		var nodeClass model.NodeClass
 		if err = nodeClassRows.Scan(&nodeClass.ID, &nodeClass.Namespace, &nodeClass.Description); err == nil {
 			nodeClasses = append(nodeClasses, nodeClass)
 		}
@@ -42,7 +42,7 @@ func SelectNodeClass(db *sql.DB) (nodeClasses data.NodeClasses, err error) {
 	return
 }
 
-func CreateNodeClass(c *sql.DB, nc data.NodeClass) (e error) {
+func CreateNodeClass(c *sql.DB, nc model.NodeClass) (e error) {
 	s, e := c.Prepare(insertNodeClassSQL)
 	if e != nil {
 		return

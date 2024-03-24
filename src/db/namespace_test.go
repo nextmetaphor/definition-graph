@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/nextmetaphor/definition-graph/data"
+	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -16,7 +16,7 @@ func Test_SelectNamespaces(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, len(namespaces.Namespace), 3)
 
-		assert.Equal(t, namespaces, data.Namespaces{Namespace: []data.Namespace{
+		assert.Equal(t, namespaces, model.Namespaces{Namespace: []model.Namespace{
 			{
 				Namespace: "io.nextmetaphor",
 			},

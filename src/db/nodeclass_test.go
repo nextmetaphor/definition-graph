@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/nextmetaphor/definition-graph/data"
+	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,7 +15,7 @@ func Test_SelectNodeClass(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, len(classes), 4)
 
-		assert.Equal(t, classes, data.NodeClasses{
+		assert.Equal(t, classes, model.NodeClasses{
 			{
 				ID:          "person",
 				Namespace:   "io.nextmetaphor",
@@ -43,7 +43,7 @@ func Test_SelectNodeClass(t *testing.T) {
 func Test_CreateNodeClass(t *testing.T) {
 	conn, _ := SetupCleanDatabase()
 
-	nc := data.NodeClass{
+	nc := model.NodeClass{
 		ID:          "nc001",
 		Namespace:   "io.nextmetaphor",
 		Description: "NodeClass 001",
@@ -71,7 +71,7 @@ func Test_CreateNodeClass(t *testing.T) {
 		rows, _ := conn.Query("select ID, Namespace, Description from NodeClass where ID=? and Namespace=?", nc.ID, nc.Namespace)
 
 		assert.True(t, rows.Next())
-		var nc2 data.NodeClass
+		var nc2 model.NodeClass
 		_ = rows.Scan(&nc2.ID, &nc2.Namespace, &nc2.Description)
 
 		assert.Equal(t, nc.ID, nc2.ID)

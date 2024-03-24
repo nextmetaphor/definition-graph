@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"github.com/nextmetaphor/definition-graph/data"
+	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
 )
 
@@ -12,7 +12,7 @@ const (
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, NodeClassNamespace, Description, Type, IsRequired) values (?, ?, ?, ?, ?, ?);`
 )
 
-func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassID, nodeClassNamespace string) (nodeClassAttributes data.NodeClassAttributes, err error) {
+func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassID, nodeClassNamespace string) (nodeClassAttributes model.NodeClassAttributes, err error) {
 	rows, err := db.Query(selectNodeClassAttributeByNodeClassSQL, nodeClassID, nodeClassNamespace)
 	if err != nil {
 		log.Error().Err(err)
@@ -20,7 +20,7 @@ func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassID, nodeClassNames
 	}
 	defer rows.Close()
 
-	var nca data.NodeClassAttribute
+	var nca model.NodeClassAttribute
 	for rows.Next() {
 		if err = rows.Scan(&nca.ID, &nca.NodeClassID, &nca.NodeClassNamespace, &nca.Description, &nca.Type, &nca.IsRequired); err != nil {
 			log.Error().Err(err)
@@ -32,7 +32,7 @@ func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassID, nodeClassNames
 	return
 }
 
-func CreateNodeClassAttribute(c *sql.DB, nca data.NodeClassAttribute) (e error) {
+func CreateNodeClassAttribute(c *sql.DB, nca model.NodeClassAttribute) (e error) {
 	s, e := c.Prepare(insertNodeClassAttributeSQL)
 	if e != nil {
 		log.Error().Err(e)

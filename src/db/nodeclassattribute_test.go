@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/nextmetaphor/definition-graph/data"
+	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,7 +15,7 @@ func Test_SelectNodeClassAttributeByNodeClass(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 3, len(attributes))
 
-		assert.Equal(t, data.NodeClassAttributes{
+		assert.Equal(t, model.NodeClassAttributes{
 			{
 				ID:                 "firstname",
 				NodeClassID:        "person",
@@ -48,7 +48,7 @@ func Test_CreateNodeClassAttribute(t *testing.T) {
 
 	t.Run("CreateNodeClassAttribute", func(t *testing.T) {
 
-		err := CreateNodeClassAttribute(conn, data.NodeClassAttribute{
+		err := CreateNodeClassAttribute(conn, model.NodeClassAttribute{
 			ID:                 "dob",
 			NodeClassID:        "person",
 			NodeClassNamespace: "io.nextmetaphor",
@@ -56,7 +56,7 @@ func Test_CreateNodeClassAttribute(t *testing.T) {
 			IsRequired:         0,
 			Description:        stringPointer("date of birth"),
 		})
-		err = CreateNodeClassAttribute(conn, data.NodeClassAttribute{
+		err = CreateNodeClassAttribute(conn, model.NodeClassAttribute{
 			ID:                 "title",
 			NodeClassID:        "person",
 			NodeClassNamespace: "io.nextmetaphor",
@@ -68,7 +68,7 @@ func Test_CreateNodeClassAttribute(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 5, len(attributes))
 
-		assert.Equal(t, data.NodeClassAttributes{
+		assert.Equal(t, model.NodeClassAttributes{
 			{
 				ID:                 "dob",
 				NodeClassID:        "person",
