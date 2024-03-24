@@ -3,9 +3,13 @@ package model
 type (
 	NodeClasses []NodeClass
 
+	NodeClassKey struct {
+		ID        string `json:"id"`
+		Namespace string `json:"namespace"`
+	}
+
 	NodeClass struct {
-		ID          string `json:"id"`
-		Namespace   string `json:"namespace"`
+		NodeClassKey
 		Description string `json:"description"`
 	}
 )
