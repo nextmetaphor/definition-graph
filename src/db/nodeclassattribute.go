@@ -10,10 +10,13 @@ const (
 	selectNodeClassAttributeByNodeClassSQL = `SELECT ID, NodeClassID, NodeClassNamespace, Description, Type, IsRequired FROM NodeClassAttribute WHERE NodeClassID=? AND NodeClassNamespace=? ORDER BY ID, Description;`
 
 	insertNodeClassAttributeSQL = `INSERT INTO NodeClassAttribute (ID, NodeClassID, NodeClassNamespace, Description, Type, IsRequired) values (?, ?, ?, ?, ?, ?);`
+	readNodeClassAttributeSQL   = `SELECT ID, NodeClassID, NodeClassNamespace, Description, Type, IsRequired FROM NodeClassAttribute WHERE ID=? AND NodeClassID=? AND NodeClassNamespace=?;`
+	updateNodeClassAttributeSQL = `UPDATE NodeClassAttribute SET ID=?, NodeClassID=?, NodeClassNamespace=?, Description=?, Type=?, IsRequired=? WHERE ID=? AND NodeClassID=? AND NodeClassNamespace=?;`
+	deleteNodeClassAttributeSQL = `DELETE FROM NodeClassAttribute WHERE ID=? AND NodeClassID=? AND NodeClassNamespace=?;`
 )
 
-func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassID, nodeClassNamespace string) (nodeClassAttributes model.NodeClassAttributes, err error) {
-	rows, err := db.Query(selectNodeClassAttributeByNodeClassSQL, nodeClassID, nodeClassNamespace)
+func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassKey model.NodeClassKey) (nodeClassAttributes model.NodeClassAttributes, err error) {
+	rows, err := db.Query(selectNodeClassAttributeByNodeClassSQL, nodeClassKey.ID, nodeClassKey.Namespace)
 	if err != nil {
 		log.Error().Err(err)
 		return
@@ -43,6 +46,41 @@ func CreateNodeClassAttribute(c *sql.DB, nca model.NodeClassAttribute) (e error)
 		log.Error().Err(e)
 		return
 	}
+
+	return
+}
+
+func ReadNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (nca model.NodeClassAttribute, e error) {
+	rows, e := c.Query(readNodeClassAttributeSQL, key.ID, key.NodeClassID, key.NodeClassNamespace)
+	if e != nil {
+		return
+	}
+
+	defer rows.Close()
+	if rows.Next() {
+		e = rows.Scan(&nca.ID, &nca.NodeClassID, &nca.NodeClassNamespace, &nca.Description, &nca.Type, &nca.IsRequired)
+	}
+
+	return
+}
+
+func UpdateNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey, nca model.NodeClassAttribute) (e error) {
+	s, e := c.Prepare(updateNodeClassAttributeSQL)
+	if e != nil {
+		return
+	}
+	_, e = s.Exec(nca.ID, nca.NodeClassID, nca.NodeClassNamespace, nca.Description, nca.Type, nca.IsRequired, key.ID,
+		key.NodeClassID, key.NodeClassNamespace)
+
+	return
+}
+
+func DeleteNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (e error) {
+	s, e := c.Prepare(deleteNodeClassAttributeSQL)
+	if e != nil {
+		return
+	}
+	_, e = s.Exec(key.ID, key.NodeClassID, key.NodeClassNamespace)
 
 	return
 }
