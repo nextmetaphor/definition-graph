@@ -14,9 +14,6 @@ const (
 	updateNodeClassSQL = `UPDATE NodeClass SET ID=?, Namespace=?, Description=? WHERE ID=? AND Namespace=?;`
 	deleteNodeClassSQL = `DELETE FROM NodeClass WHERE ID=? AND Namespace=?;`
 
-	insertNodeClassEdgeSQL = `INSERT INTO NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) values (?, ?, ?, ?, ?);`
-	selectNodeClassEdgeSQL = `SELECT SourceNodeClassID, DestinationNodeClassID, Relationship from NodeClassEdge`
-
 	logCannotPrepareNodeClassStmt         = "cannot prepare NodeClass insert statement"
 	logCannotPrepareNodeClassEdgeStmt     = "cannot prepare NodeClassEdge insert statement"
 	logCannotExecuteNodeClassStmt         = "cannot execute NodeClass insert statement, id=[%s], [%#v]"
