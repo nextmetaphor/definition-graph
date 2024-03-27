@@ -18,7 +18,7 @@ const (
 	pathNamespace     = pathNamespaceRoot + "/{" + entityNamespace + "}"
 
 	pathNodeClassRoot = "/" + entityNodeClass
-	pathNodeClass     = pathNodeClassRoot + "/{" + entityNodeClass + "}"
+	pathNodeClass     = pathNodeClassRoot + "/{" + entityNamespace + "}" + "/{" + entityNodeClass + "}"
 
 	pathNodeRoot = "/" + entityNode
 	pathNode     = pathNodeRoot + "/{" + entityNode + "}"
@@ -33,7 +33,7 @@ var (
 
 func writeHTTPResponse(data any, err error, w http.ResponseWriter, errorMessage string) {
 	var b []byte
-	if err == nil {
+	if err == nil && data != nil {
 		b, err = json.Marshal(data)
 	}
 
@@ -60,9 +60,15 @@ func Listen(conn *sql.DB) {
 	mux.HandleFunc(pathNode, readNodeHandler)
 	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
 
+	// namespace functions
+	mux.HandleFunc("GET "+pathNamespaceRoot, selectNamespaceHandler)
+
 	// nodeClass functions
-	mux.HandleFunc(pathNodeClassRoot, nodeClassHandler)
-	mux.HandleFunc(pathNamespaceRoot, selectNamespaceHandler)
+	mux.HandleFunc("GET "+pathNodeClassRoot, selectNodeClassHandler)
+	mux.HandleFunc("POST "+pathNodeClassRoot, createNodeClassHandler)
+	mux.HandleFunc("GET "+pathNodeClass, readNodeClassHandler)
+	mux.HandleFunc("PUT "+pathNodeClass, updateNodeClassHandler)
+	mux.HandleFunc("DELETE "+pathNodeClass, deleteNodeClassHandler)
 
 	// graph functions
 	mux.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)

@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
+	"github.com/nextmetaphor/definition-graph/model"
 )
 
 func nodeClassInsert(conn *sql.DB, ID string, Namespace string, Description string) {
@@ -17,12 +17,21 @@ func nodeClassInsert(conn *sql.DB, ID string, Namespace string, Description stri
 func nodeClassAttributeInsert(conn *sql.DB, ID string, NodeClassID string, NodeClassNamespace string, Type string, IsRequired int, Description *string) {
 	stmt, err := conn.Prepare("insert into NodeClassAttribute (ID, NodeClassID, NodeClassNamespace, Type, IsRequired, Description) values (?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		fmt.Println(err)
 		err.Error()
 	}
 
 	if _, err = stmt.Exec(ID, NodeClassID, NodeClassNamespace, Type, IsRequired, Description); err != nil {
-		fmt.Println(err)
+		err.Error()
+	}
+}
+
+func nodeClassEdgeInsert(conn *sql.DB, edge model.NodeClassEdge) {
+	stmt, err := conn.Prepare("insert into NodeClassEdge (SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) values (?, ?, ?, ?, ?)")
+	if err != nil {
+		err.Error()
+	}
+
+	if _, err = stmt.Exec(edge.SourceNodeClassID, edge.SourceNodeClassNamespace, edge.DestinationNodeClassID, edge.DestinationNodeClassNamespace, edge.Relationship); err != nil {
 		err.Error()
 	}
 }
@@ -48,6 +57,23 @@ func PopulateDatabaseWithSampleData(conn *sql.DB) error {
 	nodeClassInsert(conn, "company", "io.nextmetaphor.org", "A company")
 	nodeClassInsert(conn, "bu", "io.nextmetaphor.org", "A business unit")
 	nodeClassInsert(conn, "workload", "io.nextmetaphor.org.cloud", "A workload")
+
+	nodeClassEdgeInsert(conn, model.NodeClassEdge{
+		NodeClassEdgeKey: model.NodeClassEdgeKey{
+			SourceNodeClassID:             "company",
+			SourceNodeClassNamespace:      "io.nextmetaphor.org",
+			DestinationNodeClassID:        "person",
+			DestinationNodeClassNamespace: "io.nextmetaphor",
+			Relationship:                  "EMPLOYS",
+		}})
+	nodeClassEdgeInsert(conn, model.NodeClassEdge{
+		NodeClassEdgeKey: model.NodeClassEdgeKey{
+			SourceNodeClassID:             "company",
+			SourceNodeClassNamespace:      "io.nextmetaphor.org",
+			DestinationNodeClassID:        "bu",
+			DestinationNodeClassNamespace: "io.nextmetaphor.org",
+			Relationship:                  "MADE_UP_OF",
+		}})
 
 	return nil
 }

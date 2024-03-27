@@ -62,7 +62,7 @@ func StoreNodeSpecificationOnlyEdges(db *sql.DB, ns *definition.NodeSpecificatio
 		// create NodeClassEdge records
 		for _, edge := range node.Edges {
 			log.Debug().Msgf(logAboutToCreateNodeEdge, nodeClassID, nodeID, edge)
-			_, err := edgeStmt.Exec(nodeID, nodeClassID, edge.DestinationNodeID, edge.DestinationNodeClassID, edge.Relationship)
+			_, err := edgeStmt.Exec(nodeID, nodeClassID, "", edge.DestinationNodeID, edge.DestinationNodeClassID, "", edge.Relationship)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeEdgeStmt, nodeClassID, edge)
 			}
