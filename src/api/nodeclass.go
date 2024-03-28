@@ -17,12 +17,12 @@ const (
 
 func selectNamespaceHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := db2.SelectNamespaces(db)
-	writeHTTPResponse(data, err, w, logCannotSelectNamespaces)
+	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNamespaces)
 }
 
 func selectNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := db2.SelectNodeClass(db)
-	writeHTTPResponse(data, err, w, logCannotSelectNodeClass)
+	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClass)
 }
 
 func createNodeClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +32,7 @@ func createNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		err = db2.CreateNodeClass(db, nc)
 	}
-	writeHTTPResponse(nil, err, w, logCannotCreateNodeClass)
+	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeClass)
 }
 
 func readNodeClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,11 @@ func readNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 		ID:        id,
 		Namespace: ns,
 	})
-	writeHTTPResponse(nc, err, w, logCannotReadNodeClass)
+	if nc == nil {
+		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotReadNodeClass)
+	} else {
+		writeHTTPResponse(http.StatusOK, nc, err, w, logCannotReadNodeClass)
+	}
 }
 
 func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,20 +61,28 @@ func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 		err = db2.CreateNodeClass(db, nc)
 	}
 
-	err = db2.UpdateNodeClass(db, model.NodeClassKey{
+	count, err := db2.UpdateNodeClass(db, model.NodeClassKey{
 		ID:        id,
 		Namespace: ns,
 	}, nc)
-	writeHTTPResponse(nil, err, w, logCannotReadNodeClass)
+	if count == 0 {
+		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotReadNodeClass)
+	} else {
+		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotReadNodeClass)
+	}
 }
 
 func deleteNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	ns := r.PathValue(entityNamespace)
 	id := r.PathValue(entityNodeClass)
 
-	err := db2.DeleteNodeClass(db, model.NodeClassKey{
+	count, err := db2.DeleteNodeClass(db, model.NodeClassKey{
 		ID:        id,
 		Namespace: ns,
 	})
-	writeHTTPResponse(nil, err, w, logCannotDeleteNodeClass)
+	if count == 0 {
+		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotDeleteNodeClass)
+	} else {
+		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotDeleteNodeClass)
+	}
 }

@@ -31,7 +31,7 @@ var (
 	db *sql.DB
 )
 
-func writeHTTPResponse(data any, err error, w http.ResponseWriter, errorMessage string) {
+func writeHTTPResponse(returnCode int, data any, err error, w http.ResponseWriter, errorMessage string) {
 	var b []byte
 	if err == nil && data != nil {
 		b, err = json.Marshal(data)
@@ -45,6 +45,7 @@ func writeHTTPResponse(data any, err error, w http.ResponseWriter, errorMessage 
 		log.Error().Err(err).Msg(errorMessage)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
+		w.WriteHeader(returnCode)
 		if _, err = fmt.Fprintf(w, string(b)); err != nil {
 			log.Error().Err(err).Msg(errorMessage)
 		}

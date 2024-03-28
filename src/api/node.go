@@ -14,7 +14,7 @@ func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
 	nodeClass := r.Header.Get(entityNodeClass)
 
 	data, err := db2.SelectNodes(db, nodeClass, nodeClassNamespace)
-	writeHTTPResponse(data, err, w, logCannotSelectNodeGraph)
+	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeGraph)
 }
 
 func readNodeHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,5 +23,5 @@ func readNodeHandler(w http.ResponseWriter, r *http.Request) {
 	nodeID := r.PathValue(entityNode)
 
 	data, err := db2.ReadNodeByID(db, namespace, nodeClassID, nodeID)
-	writeHTTPResponse(data, err, w, logCannotReadNode)
+	writeHTTPResponse(http.StatusOK, data, err, w, logCannotReadNode)
 }

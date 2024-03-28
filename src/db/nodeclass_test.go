@@ -106,8 +106,9 @@ func Test_UpdateNodeClass(t *testing.T) {
 			NodeClassKey: key,
 			Description:  "NEW DESCRIPTION",
 		}
-		err := UpdateNodeClass(conn, key, newNodeClass)
+		count, err := UpdateNodeClass(conn, key, newNodeClass)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), count)
 
 		rows, _ := conn.Query("select ID, Namespace, Description from NodeClass where ID=? and Namespace=?", key.ID, key.Namespace)
 
@@ -133,8 +134,9 @@ func Test_UpdateNodeClass(t *testing.T) {
 			},
 			Description: "Description 2",
 		}
-		err := UpdateNodeClass(conn, key, newNodeClass)
+		count, err := UpdateNodeClass(conn, key, newNodeClass)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), count)
 
 		rows, _ := conn.Query("select ID, Namespace, Description from NodeClass where ID=? and Namespace=?", newNodeClass.ID, newNodeClass.Namespace)
 		defer rows.Close()
@@ -164,8 +166,9 @@ func Test_DeleteNodeClass(t *testing.T) {
 		assert.True(t, rows.Next())
 		rows.Close()
 
-		err := DeleteNodeClass(conn, key)
+		count, err := DeleteNodeClass(conn, key)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), count)
 
 		rows, _ = conn.Query("select ID, Namespace, Description from NodeClass where ID=? and Namespace=?", key.ID, key.Namespace)
 		assert.False(t, rows.Next())

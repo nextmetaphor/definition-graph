@@ -52,7 +52,7 @@ func CreateNodeClass(c *sql.DB, nc model.NodeClass) (e error) {
 	return
 }
 
-func ReadNodeClass(c *sql.DB, key model.NodeClassKey) (nc model.NodeClass, e error) {
+func ReadNodeClass(c *sql.DB, key model.NodeClassKey) (nc *model.NodeClass, e error) {
 	rows, e := c.Query(readNodeClassSQL, key.ID, key.Namespace)
 	if e != nil {
 		return
@@ -60,28 +60,35 @@ func ReadNodeClass(c *sql.DB, key model.NodeClassKey) (nc model.NodeClass, e err
 
 	defer rows.Close()
 	if rows.Next() {
+		nc = new(model.NodeClass)
 		e = rows.Scan(&nc.ID, &nc.Namespace, &nc.Description)
 	}
 
 	return
 }
 
-func UpdateNodeClass(c *sql.DB, key model.NodeClassKey, nc model.NodeClass) (e error) {
+func UpdateNodeClass(c *sql.DB, key model.NodeClassKey, nc model.NodeClass) (count int64, e error) {
 	s, e := c.Prepare(updateNodeClassSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(nc.ID, nc.Namespace, nc.Description, key.ID, key.Namespace)
+	r, e := s.Exec(nc.ID, nc.Namespace, nc.Description, key.ID, key.Namespace)
+	count, _ = r.RowsAffected()
 
 	return
 }
 
-func DeleteNodeClass(c *sql.DB, key model.NodeClassKey) (e error) {
+func DeleteNodeClass(c *sql.DB, key model.NodeClassKey) (count int64, e error) {
 	s, e := c.Prepare(deleteNodeClassSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(key.ID, key.Namespace)
+	r, e := s.Exec(key.ID, key.Namespace)
+	if e != nil {
+		return
+	}
+
+	count, _ = r.RowsAffected()
 
 	return
 }
