@@ -15,13 +15,19 @@ const (
 	logCannotDeleteNodeClass  = "cannot delete nodeClass"
 )
 
+// function indirection to allow unit test stubs to be created
+var (
+	selectNamespacesFunc = db2.SelectNamespaces
+	selectNodeClassFunc  = db2.SelectNodeClass
+)
+
 func selectNamespaceHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := db2.SelectNamespaces(db)
+	data, err := selectNamespacesFunc(db)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNamespaces)
 }
 
 func selectNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := db2.SelectNodeClass(db)
+	data, err := selectNodeClassFunc(db)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClass)
 }
 

@@ -40,6 +40,7 @@ func writeHTTPResponse(returnCode int, data any, err error, w http.ResponseWrite
 	//TODO - sort this out
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
 		log.Error().Err(err).Msg(errorMessage)
