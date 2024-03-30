@@ -14,9 +14,9 @@ func Test_SelectNamespaces(t *testing.T) {
 		namespaces, err := SelectNamespaces(conn)
 
 		assert.Nil(t, err)
-		assert.Equal(t, len(namespaces.Namespace), 3)
+		assert.Equal(t, len(namespaces), 3)
 
-		assert.Equal(t, namespaces, model.Namespaces{Namespace: []model.Namespace{
+		assert.Equal(t, namespaces, model.Namespaces{
 			{
 				Namespace: "io.nextmetaphor",
 			},
@@ -25,7 +25,7 @@ func Test_SelectNamespaces(t *testing.T) {
 			},
 			{
 				Namespace: "io.nextmetaphor.org.cloud",
-			}},
+			},
 		})
 	})
 }

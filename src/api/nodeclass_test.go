@@ -12,7 +12,7 @@ import (
 )
 
 func Test_selectNamespaceHandler(t *testing.T) {
-	ns := model.Namespaces{Namespace: []model.Namespace{
+	ns := model.Namespaces{
 		{
 			Namespace: "io.nextmetaphor",
 		},
@@ -21,7 +21,7 @@ func Test_selectNamespaceHandler(t *testing.T) {
 		},
 		{
 			Namespace: "io.nextmetaphor.org.cloud",
-		}},
+		},
 	}
 
 	nsJSON, e := json.Marshal(ns)

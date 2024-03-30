@@ -1,9 +1,7 @@
 package model
 
 type (
-	Namespaces struct {
-		Namespace []Namespace `json:"namespaces"`
-	}
+	Namespaces []Namespace
 
 	Namespace struct {
 		Namespace string `json:"namespace"`

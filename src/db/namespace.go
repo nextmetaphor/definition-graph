@@ -21,7 +21,7 @@ func SelectNamespaces(db *sql.DB) (namespaces model.Namespaces, err error) {
 	for namespaceRows.Next() {
 		var nodeClass model.Namespace
 		if err = namespaceRows.Scan(&nodeClass.Namespace); err == nil {
-			namespaces.Namespace = append(namespaces.Namespace, nodeClass)
+			namespaces = append(namespaces, nodeClass)
 		}
 	}
 

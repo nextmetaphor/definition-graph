@@ -63,10 +63,10 @@ func Listen(conn *sql.DB) {
 	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
 
 	// namespace functions
-	mux.HandleFunc("GET "+pathNamespaceRoot, selectNamespaceHandler)
+	mux.HandleFunc(pathNamespaceRoot, selectNamespaceHandler)
 
 	// nodeClass functions
-	mux.HandleFunc("GET "+pathNodeClassRoot, selectNodeClassHandler)
+	mux.HandleFunc(pathNodeClassRoot, selectNodeClassHandler)
 	mux.HandleFunc("POST "+pathNodeClassRoot, createNodeClassHandler)
 	mux.HandleFunc("GET "+pathNodeClass, readNodeClassHandler)
 	mux.HandleFunc("PUT "+pathNodeClass, updateNodeClassHandler)
