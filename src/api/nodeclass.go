@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	db2 "github.com/nextmetaphor/definition-graph/db"
+	"github.com/nextmetaphor/definition-graph/db"
 	"github.com/nextmetaphor/definition-graph/model"
 	"net/http"
 )
@@ -17,17 +17,21 @@ const (
 
 // function indirection to allow unit test stubs to be created
 var (
-	selectNamespacesFunc = db2.SelectNamespaces
-	selectNodeClassFunc  = db2.SelectNodeClass
+	selectNamespacesFunc = db.SelectNamespaces
+	selectNodeClassFunc  = db.SelectNodeClass
+	createNodeClassFunc  = db.CreateNodeClass
+	readNodeClassFunc    = db.ReadNodeClass
+	updateNodeClassFunc  = db.UpdateNodeClass
+	deleteNodeClassFunc  = db.DeleteNodeClass
 )
 
 func selectNamespaceHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNamespacesFunc(db)
+	data, err := selectNamespacesFunc(dbConn)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNamespaces)
 }
 
 func selectNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNodeClassFunc(db)
+	data, err := selectNodeClassFunc(dbConn)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClass)
 }
 
@@ -36,7 +40,7 @@ func createNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&nc)
 
 	if err == nil {
-		err = db2.CreateNodeClass(db, nc)
+		err = createNodeClassFunc(dbConn, nc)
 	}
 	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeClass)
 }
@@ -45,7 +49,7 @@ func readNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	ns := r.PathValue(entityNamespace)
 	id := r.PathValue(entityNodeClass)
 
-	nc, err := db2.ReadNodeClass(db, model.NodeClassKey{
+	nc, err := readNodeClassFunc(dbConn, model.NodeClassKey{
 		ID:        id,
 		Namespace: ns,
 	})
@@ -63,18 +67,18 @@ func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	var nc model.NodeClass
 	err := json.NewDecoder(r.Body).Decode(&nc)
 
-	if err == nil {
-		err = db2.CreateNodeClass(db, nc)
-	}
-
-	count, err := db2.UpdateNodeClass(db, model.NodeClassKey{
-		ID:        id,
-		Namespace: ns,
-	}, nc)
-	if count == 0 {
-		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotReadNodeClass)
-	} else {
+	if err != nil {
 		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotReadNodeClass)
+	} else {
+		count, err := updateNodeClassFunc(dbConn, model.NodeClassKey{
+			ID:        id,
+			Namespace: ns,
+		}, nc)
+		if count == 0 {
+			writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotReadNodeClass)
+		} else {
+			writeHTTPResponse(http.StatusOK, nil, err, w, logCannotReadNodeClass)
+		}
 	}
 }
 
@@ -82,7 +86,7 @@ func deleteNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	ns := r.PathValue(entityNamespace)
 	id := r.PathValue(entityNodeClass)
 
-	count, err := db2.DeleteNodeClass(db, model.NodeClassKey{
+	count, err := deleteNodeClassFunc(dbConn, model.NodeClassKey{
 		ID:        id,
 		Namespace: ns,
 	})

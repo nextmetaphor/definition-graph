@@ -35,7 +35,8 @@ func StoreNodeSpecificationWithoutEdges(db *sql.DB, ns *definition.NodeSpecifica
 		// create NodeClassAttribute records
 		for attributeID, attribute := range node.Attributes {
 			log.Debug().Msgf(logAboutToCreateNodeAttribute, nodeClassID, nodeID, attribute)
-			_, err := attributeStmt.Exec(nodeID, nodeClassID, attributeID, attribute)
+			// TODO needs namespace
+			_, err := attributeStmt.Exec(nodeID, nodeClassID, "default", attributeID, attribute)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeAttributeStmt, attributeID, nodeID, attribute)
 			}
@@ -62,7 +63,8 @@ func StoreNodeSpecificationOnlyEdges(db *sql.DB, ns *definition.NodeSpecificatio
 		// create NodeClassEdge records
 		for _, edge := range node.Edges {
 			log.Debug().Msgf(logAboutToCreateNodeEdge, nodeClassID, nodeID, edge)
-			_, err := edgeStmt.Exec(nodeID, nodeClassID, "", edge.DestinationNodeID, edge.DestinationNodeClassID, "", edge.Relationship)
+			//TODO needs namespace
+			_, err := edgeStmt.Exec(nodeID, nodeClassID, "default", edge.DestinationNodeID, edge.DestinationNodeClassID, "default", edge.Relationship)
 			if err != nil {
 				log.Warn().Err(err).Msgf(logCannotExecuteNodeEdgeStmt, nodeClassID, edge)
 			}

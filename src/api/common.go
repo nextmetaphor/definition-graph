@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	db *sql.DB
+	dbConn *sql.DB
 )
 
 func writeHTTPResponse(returnCode int, data any, err error, w http.ResponseWriter, errorMessage string) {
@@ -57,7 +57,7 @@ func writeHTTPResponse(returnCode int, data any, err error, w http.ResponseWrite
 }
 
 func Listen(conn *sql.DB) {
-	db = conn
+	dbConn = conn
 
 	mux := http.NewServeMux()
 

@@ -1,7 +1,7 @@
 package api
 
 import (
-	db2 "github.com/nextmetaphor/definition-graph/db"
+	"github.com/nextmetaphor/definition-graph/db"
 	"net/http"
 )
 
@@ -11,11 +11,11 @@ const (
 )
 
 func nodeClassGraphHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := db2.SelectNodeClassGraph(db)
+	data, err := db.SelectNodeClassGraph(dbConn)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClassGraph)
 }
 
 func nodeGraphHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := db2.SelectNodeGraph(db)
+	data, err := db.SelectNodeGraph(dbConn)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeGraph)
 }

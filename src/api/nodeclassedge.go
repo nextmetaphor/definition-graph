@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	db2 "github.com/nextmetaphor/definition-graph/db"
+	"github.com/nextmetaphor/definition-graph/db"
 	"github.com/nextmetaphor/definition-graph/model"
 	"net/http"
 )
@@ -14,8 +14,8 @@ const (
 
 // function indirection to allow unit test stubs to be created
 var (
-	selectNodeClassEdgeBySourceNodeClassFunc = db2.SelectNodeClassEdgeBySourceNodeClass
-	createNodeClassEdgeFunc                  = db2.CreateNodeClassEdge
+	selectNodeClassEdgeBySourceNodeClassFunc = db.SelectNodeClassEdgeBySourceNodeClass
+	createNodeClassEdgeFunc                  = db.CreateNodeClassEdge
 )
 
 func selectNodeClassEdgeBySourceNodeClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +24,7 @@ func selectNodeClassEdgeBySourceNodeClassHandler(w http.ResponseWriter, r *http.
 		Namespace: r.Header.Get("source-node-class-namespace"),
 	}
 
-	data, err := selectNodeClassEdgeBySourceNodeClassFunc(db, nodeClassKey)
+	data, err := selectNodeClassEdgeBySourceNodeClassFunc(dbConn, nodeClassKey)
 	writeHTTPResponse(http.StatusOK, data, err, w, logSelectNodeClassEdgeBySourceNodeClass)
 }
 
@@ -33,7 +33,7 @@ func createNodeClassEdgeHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&nce)
 
 	if err == nil {
-		err = db2.CreateNodeClassEdge(db, nce)
+		err = createNodeClassEdgeFunc(dbConn, nce)
 	}
 	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeClassEdge)
 }
