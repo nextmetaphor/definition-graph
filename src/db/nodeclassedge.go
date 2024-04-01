@@ -18,6 +18,8 @@ const (
 )
 
 func SelectNodeClassEdgeBySourceNodeClass(db *sql.DB, nodeClassKey model.NodeClassKey) (nodeClassEdges model.NodeClassEdges, err error) {
+	nodeClassEdges = model.NodeClassEdges{}
+
 	rows, err := db.Query(selectNodeClassEdgeBySourceNodeClassSQL, nodeClassKey.ID, nodeClassKey.Namespace)
 	if err != nil {
 		log.Error().Err(err)
