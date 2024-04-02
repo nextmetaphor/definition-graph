@@ -54,7 +54,7 @@ func CreateNodeClassEdge(c *sql.DB, nce model.NodeClassEdge) (e error) {
 	return
 }
 
-func ReadNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey) (nce model.NodeClassEdge, e error) {
+func ReadNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey) (nce *model.NodeClassEdge, e error) {
 	rows, e := c.Query(readNodeClassEdgeSQL, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
 	if e != nil {
 		return
@@ -62,28 +62,35 @@ func ReadNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey) (nce model.NodeCla
 
 	defer rows.Close()
 	if rows.Next() {
+		nce = new(model.NodeClassEdge)
 		e = rows.Scan(&nce.SourceNodeClassID, &nce.SourceNodeClassNamespace, &nce.DestinationNodeClassID, &nce.DestinationNodeClassNamespace, &nce.Relationship)
 	}
 
 	return
 }
 
-func UpdateNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey, nce model.NodeClassEdge) (e error) {
+func UpdateNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey, nce model.NodeClassEdge) (count int64, e error) {
 	s, e := c.Prepare(updateNodeClassEdgeSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(nce.SourceNodeClassID, nce.SourceNodeClassNamespace, nce.DestinationNodeClassID, nce.DestinationNodeClassNamespace, nce.Relationship, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	r, e := s.Exec(nce.SourceNodeClassID, nce.SourceNodeClassNamespace, nce.DestinationNodeClassID, nce.DestinationNodeClassNamespace, nce.Relationship, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	if r != nil {
+		count, _ = r.RowsAffected()
+	}
 
 	return
 }
 
-func DeleteNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey) (e error) {
+func DeleteNodeClassEdge(c *sql.DB, key model.NodeClassEdgeKey) (count int64, e error) {
 	s, e := c.Prepare(deleteNodeClassEdgeSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	r, e := s.Exec(key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	if r != nil {
+		count, _ = r.RowsAffected()
+	}
 
 	return
 }
