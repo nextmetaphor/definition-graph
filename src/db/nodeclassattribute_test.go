@@ -188,8 +188,9 @@ func Test_UpdateNodeClassAttribute(t *testing.T) {
 			IsRequired:            1,
 			Description:           stringPointer("NEW DESCRIPTION"),
 		}
-		err := UpdateNodeClassAttribute(conn, key, newNodeClassAttribute)
+		c, err := UpdateNodeClassAttribute(conn, key, newNodeClassAttribute)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), c)
 
 		rows, _ := conn.Query("SELECT ID, NodeClassID, NodeClassNamespace, Type, IsRequired, Description from NodeClassAttribute WHERE ID=? AND NodeClassID=? AND NodeClassNamespace=?", key.ID, key.NodeClassID, key.NodeClassNamespace)
 
@@ -220,8 +221,9 @@ func Test_UpdateNodeClassAttribute(t *testing.T) {
 			IsRequired:            1,
 			Description:           nil,
 		}
-		err := UpdateNodeClassAttribute(conn, key, newNodeClassAttribute)
+		c, err := UpdateNodeClassAttribute(conn, key, newNodeClassAttribute)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), c)
 
 		rows, _ := conn.Query("SELECT ID, NodeClassID, NodeClassNamespace, Type, IsRequired, Description from NodeClassAttribute WHERE ID=? AND NodeClassID=? AND NodeClassNamespace=?", key.ID, key.NodeClassID, key.NodeClassNamespace)
 
@@ -256,8 +258,9 @@ func Test_UpdateNodeClassAttribute(t *testing.T) {
 			IsRequired:  1,
 			Description: stringPointer("NEW DESCRIPTION"),
 		}
-		err := UpdateNodeClassAttribute(conn, key, newNodeClassAttribute)
+		c, err := UpdateNodeClassAttribute(conn, key, newNodeClassAttribute)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), c)
 
 		rows, _ := conn.Query("SELECT ID, NodeClassID, NodeClassNamespace, Type, IsRequired, Description from NodeClassAttribute WHERE ID=? AND NodeClassID=? AND NodeClassNamespace=?", newNodeClassAttribute.ID, newNodeClassAttribute.NodeClassID, newNodeClassAttribute.NodeClassNamespace)
 
@@ -292,8 +295,9 @@ func Test_DeleteNodeClassAttribute(t *testing.T) {
 		assert.True(t, rows.Next())
 		rows.Close()
 
-		err := DeleteNodeClassAttribute(conn, key)
+		c, err := DeleteNodeClassAttribute(conn, key)
 		assert.Nil(t, err)
+		assert.Equal(t, int64(1), c)
 
 		rows, _ = conn.Query("select * from NodeClassAttribute where ID=? and NodeClassID=? and NodeClassNamespace=?", key.ID, key.NodeClassID, key.NodeClassNamespace)
 		assert.False(t, rows.Next())

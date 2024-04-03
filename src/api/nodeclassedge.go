@@ -25,12 +25,10 @@ var (
 )
 
 func selectNodeClassEdgeBySourceNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	nodeClassKey := model.NodeClassKey{
+	data, err := selectNodeClassEdgeBySourceNodeClassFunc(dbConn, model.NodeClassKey{
 		ID:        r.Header.Get("source-node-class-id"),
 		Namespace: r.Header.Get("source-node-class-namespace"),
-	}
-
-	data, err := selectNodeClassEdgeBySourceNodeClassFunc(dbConn, nodeClassKey)
+	})
 	writeHTTPResponse(http.StatusOK, data, err, w, logSelectNodeClassEdgeBySourceNodeClass)
 }
 

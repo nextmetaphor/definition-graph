@@ -50,7 +50,7 @@ func CreateNodeClassAttribute(c *sql.DB, nca model.NodeClassAttribute) (e error)
 	return
 }
 
-func ReadNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (nca model.NodeClassAttribute, e error) {
+func ReadNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (nca *model.NodeClassAttribute, e error) {
 	rows, e := c.Query(readNodeClassAttributeSQL, key.ID, key.NodeClassID, key.NodeClassNamespace)
 	if e != nil {
 		return
@@ -58,29 +58,36 @@ func ReadNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (nca mod
 
 	defer rows.Close()
 	if rows.Next() {
+		nca = new(model.NodeClassAttribute)
 		e = rows.Scan(&nca.ID, &nca.NodeClassID, &nca.NodeClassNamespace, &nca.Description, &nca.Type, &nca.IsRequired)
 	}
 
 	return
 }
 
-func UpdateNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey, nca model.NodeClassAttribute) (e error) {
+func UpdateNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey, nca model.NodeClassAttribute) (count int64, e error) {
 	s, e := c.Prepare(updateNodeClassAttributeSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(nca.ID, nca.NodeClassID, nca.NodeClassNamespace, nca.Description, nca.Type, nca.IsRequired, key.ID,
+	r, e := s.Exec(nca.ID, nca.NodeClassID, nca.NodeClassNamespace, nca.Description, nca.Type, nca.IsRequired, key.ID,
 		key.NodeClassID, key.NodeClassNamespace)
+	if r != nil {
+		count, _ = r.RowsAffected()
+	}
 
 	return
 }
 
-func DeleteNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (e error) {
+func DeleteNodeClassAttribute(c *sql.DB, key model.NodeClassAttributeKey) (count int64, e error) {
 	s, e := c.Prepare(deleteNodeClassAttributeSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(key.ID, key.NodeClassID, key.NodeClassNamespace)
+	r, e := s.Exec(key.ID, key.NodeClassID, key.NodeClassNamespace)
+	if r != nil {
+		count, _ = r.RowsAffected()
+	}
 
 	return
 }
