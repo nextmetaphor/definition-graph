@@ -23,6 +23,7 @@ func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassKey model.NodeClas
 	}
 	defer rows.Close()
 
+	nodeClassAttributes = []model.NodeClassAttribute{}
 	var nca model.NodeClassAttribute
 	for rows.Next() {
 		if err = rows.Scan(&nca.ID, &nca.NodeClassID, &nca.NodeClassNamespace, &nca.Description, &nca.Type, &nca.IsRequired); err != nil {

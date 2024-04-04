@@ -26,8 +26,8 @@ var (
 
 func selectNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := selectNodeClassAttributeFunc(dbConn, model.NodeClassKey{
-		ID:        r.Header.Get("class-id"),
-		Namespace: r.Header.Get("class-namespace"),
+		ID:        r.Header.Get("node-class-id"),
+		Namespace: r.Header.Get("node-class-namespace"),
 	})
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClassAttribute)
 }
@@ -72,5 +72,18 @@ func updateNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			writeHTTPResponse(http.StatusOK, nil, err, w, logCannotUpdateNodeClassAttribute)
 		}
+	}
+}
+
+func deleteNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
+	count, err := deleteNodeClassAttributeFunc(dbConn, model.NodeClassAttributeKey{
+		ID:                 r.Header.Get("id"),
+		NodeClassID:        r.Header.Get("node-class-id"),
+		NodeClassNamespace: r.Header.Get("node-class-namespace"),
+	})
+	if count == 0 {
+		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotDeleteNodeClassAttribute)
+	} else {
+		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotDeleteNodeClassAttribute)
 	}
 }

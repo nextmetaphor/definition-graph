@@ -9,11 +9,12 @@ import (
 )
 
 const (
-	entityNamespace     = "namespace"
-	entityNodeClass     = "nodeclass"
-	entityNodeClassEdge = "nodeclassedge"
-	entityNode          = "node"
-	entityGraph         = "graph"
+	entityNamespace          = "namespace"
+	entityNodeClass          = "nodeclass"
+	entityNodeClassEdge      = "nodeclassedge"
+	entityNodeClassAttribute = "nodeclassattribute"
+	entityNode               = "node"
+	entityGraph              = "graph"
 
 	pathNamespaceRoot = "/" + entityNamespace
 	pathNamespace     = pathNamespaceRoot + "/{" + entityNamespace + "}"
@@ -23,6 +24,9 @@ const (
 
 	pathNodeClassEdgeRoot       = "/" + entityNodeClassEdge
 	pathNodeClassEdgeRootEntity = pathNodeClassEdgeRoot + "/"
+
+	pathNodeClassAttributeRoot       = "/" + entityNodeClassAttribute
+	pathNodeClassAttributeRootEntity = pathNodeClassAttributeRoot + "/"
 
 	pathNodeRoot = "/" + entityNode
 	pathNode     = pathNodeRoot + "/{" + entityNode + "}"
@@ -82,6 +86,13 @@ func Listen(conn *sql.DB) {
 	mux.HandleFunc("GET "+pathNodeClassEdgeRootEntity, readNodeClassEdgeHandler)
 	mux.HandleFunc("PUT "+pathNodeClassEdgeRootEntity, updateNodeClassEdgeHandler)
 	mux.HandleFunc("DELETE "+pathNodeClassEdgeRootEntity, deleteNodeClassEdgeHandler)
+
+	//nodeClassAttribute functions
+	mux.HandleFunc(pathNodeClassAttributeRoot, selectNodeClassAttributeHandler)
+	mux.HandleFunc("POST "+pathNodeClassAttributeRoot, createNodeClassAttributeHandler)
+	mux.HandleFunc("GET "+pathNodeClassAttributeRootEntity, readNodeClassAttributeHandler)
+	mux.HandleFunc("PUT "+pathNodeClassAttributeRootEntity, updateNodeClassAttributeHandler)
+	mux.HandleFunc("DELETE "+pathNodeClassAttributeRootEntity, deleteNodeClassAttributeHandler)
 
 	// graph functions
 	mux.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)
