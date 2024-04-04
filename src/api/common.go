@@ -14,9 +14,13 @@ const (
 	entityNodeClassEdge      = "nodeclassedge"
 	entityNodeClassAttribute = "nodeclassattribute"
 	entityNode               = "node"
+	entityNodeAttribute      = "nodeattribute"
+	entityNodeEdge           = "nodeedge"
 	entityGraph              = "graph"
 
+	// HTTP header parameter constants
 	paramID                            = "id"
+	paramNamespace                     = "namespace"
 	paramNodeClassID                   = "node-class-id"
 	paramNodeClassNamespace            = "node-class-namespace"
 	paramSourceNodeClassID             = "source-" + paramNodeClassID
@@ -25,18 +29,22 @@ const (
 	paramDestinationNodeClassNamespace = "destination-" + paramNodeClassNamespace
 	paramRelationship                  = "relationship"
 
+	// Namespace URL paths
 	pathNamespaceRoot = "/" + entityNamespace
-	pathNamespace     = pathNamespaceRoot + "/{" + entityNamespace + "}"
 
-	pathNodeClassRoot = "/" + entityNodeClass
-	pathNodeClass     = pathNodeClassRoot + "/{" + entityNamespace + "}" + "/{" + entityNodeClass + "}"
+	// NodeClass URL paths
+	pathNodeClassRoot       = "/" + entityNodeClass
+	pathNodeClassRootEntity = pathNodeClassRoot + "/"
 
+	// NodeClassEdge URL paths
 	pathNodeClassEdgeRoot       = "/" + entityNodeClassEdge
 	pathNodeClassEdgeRootEntity = pathNodeClassEdgeRoot + "/"
 
+	// NodeClassAttribute URL paths
 	pathNodeClassAttributeRoot       = "/" + entityNodeClassAttribute
 	pathNodeClassAttributeRootEntity = pathNodeClassAttributeRoot + "/"
 
+	// Node URL paths
 	pathNodeRoot = "/" + entityNode
 	pathNode     = pathNodeRoot + "/{" + entityNode + "}"
 
@@ -81,9 +89,9 @@ func Listen(conn *sql.DB) {
 	// nodeClass functions
 	mux.HandleFunc(pathNodeClassRoot, selectNodeClassHandler)
 	mux.HandleFunc("POST "+pathNodeClassRoot, createNodeClassHandler)
-	mux.HandleFunc("GET "+pathNodeClass, readNodeClassHandler)
-	mux.HandleFunc("PUT "+pathNodeClass, updateNodeClassHandler)
-	mux.HandleFunc("DELETE "+pathNodeClass, deleteNodeClassHandler)
+	mux.HandleFunc("GET "+pathNodeClassRootEntity, readNodeClassHandler)
+	mux.HandleFunc("PUT "+pathNodeClassRootEntity, updateNodeClassHandler)
+	mux.HandleFunc("DELETE "+pathNodeClassRootEntity, deleteNodeClassHandler)
 
 	// nodeClassEdge functions
 	mux.HandleFunc(pathNodeClassEdgeRoot, selectNodeClassEdgeBySourceNodeClassHandler)

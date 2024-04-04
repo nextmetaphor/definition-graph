@@ -9,11 +9,16 @@ const (
 	logCannotReadNode = "cannot read node"
 )
 
+// function indirection to allow unit test stubs to be created
+var (
+	selectNodeFunc = db.SelectNodes
+)
+
 func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
 	nodeClassNamespace := r.Header.Get(entityNamespace)
 	nodeClass := r.Header.Get(entityNodeClass)
 
-	data, err := db.SelectNodes(dbConn, nodeClass, nodeClassNamespace)
+	data, err := selectNodeFunc(dbConn, nodeClass, nodeClassNamespace)
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeGraph)
 }
 

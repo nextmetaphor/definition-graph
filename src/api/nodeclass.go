@@ -46,12 +46,9 @@ func createNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	ns := r.PathValue(entityNamespace)
-	id := r.PathValue(entityNodeClass)
-
 	nc, err := readNodeClassFunc(dbConn, model.NodeClassKey{
-		ID:        id,
-		Namespace: ns,
+		ID:        r.Header.Get(paramID),
+		Namespace: r.Header.Get(paramNamespace),
 	})
 	if nc == nil {
 		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotReadNodeClass)
@@ -61,9 +58,6 @@ func readNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	ns := r.PathValue(entityNamespace)
-	id := r.PathValue(entityNodeClass)
-
 	var nc model.NodeClass
 	err := json.NewDecoder(r.Body).Decode(&nc)
 
@@ -71,8 +65,8 @@ func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotReadNodeClass)
 	} else {
 		count, err := updateNodeClassFunc(dbConn, model.NodeClassKey{
-			ID:        id,
-			Namespace: ns,
+			ID:        r.Header.Get(paramID),
+			Namespace: r.Header.Get(paramNamespace),
 		}, nc)
 		if count == 0 {
 			writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotReadNodeClass)
@@ -83,12 +77,9 @@ func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	ns := r.PathValue(entityNamespace)
-	id := r.PathValue(entityNodeClass)
-
 	count, err := deleteNodeClassFunc(dbConn, model.NodeClassKey{
-		ID:        id,
-		Namespace: ns,
+		ID:        r.Header.Get(paramID),
+		Namespace: r.Header.Get(paramNamespace),
 	})
 	if count == 0 {
 		writeHTTPResponse(http.StatusNotFound, nil, err, w, logCannotDeleteNodeClass)
