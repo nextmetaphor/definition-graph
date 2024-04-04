@@ -16,6 +16,8 @@ const (
 )
 
 func SelectNodeClassAttributeByNodeClass(db *sql.DB, nodeClassKey model.NodeClassKey) (nodeClassAttributes model.NodeClassAttributes, err error) {
+	nodeClassAttributes = model.NodeClassAttributes{}
+
 	rows, err := db.Query(selectNodeClassAttributeByNodeClassSQL, nodeClassKey.ID, nodeClassKey.Namespace)
 	if err != nil {
 		log.Error().Err(err)

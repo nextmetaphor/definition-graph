@@ -3,18 +3,16 @@ package db
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/nextmetaphor/definition-graph/definition"
 	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
 	"strings"
 )
 
 const (
-	insertNodeSQL                  = `INSERT INTO Node (ID, NodeClassID) values (?, ?);`
-	selectNodeSQL                  = `SELECT ID, NodeClassID from Node`
-	selectNodeSQLByClass           = `SELECT ID, NodeClassID from Node where NodeClassID=? and NodeClassNameSpace=?`
-	selectNodeSQLByID              = `SELECT ID, NodeClassID, NodeClassNamespace from Node where NodeClassNameSpace=? and NodeClassID=? and ID=?`
-	selectNodeAttributeSQLByNodeID = `SELECT NodeClassAttributeID, Value from NodeAttribute where NodeID=? and NodeClassID=? and NodeClassNameSpace=?`
+	insertNodeSQL        = `INSERT INTO Node (ID, NodeClassID) values (?, ?);`
+	selectNodeSQL        = `SELECT ID, NodeClassID, NodeClassNamespace from Node`
+	selectNodeSQLByClass = `SELECT ID, NodeClassID, NodeClassNamespace from Node where NodeClassID=? and NodeClassNameSpace=?`
+	selectNodeSQLByID    = `SELECT ID, NodeClassID, NodeClassNamespace from Node where NodeClassNameSpace=? and NodeClassID=? and ID=?`
 
 	logCannotPrepareNodeStmt              = "cannot prepare GraphNode insert statement"
 	logCannotPrepareNodeAttributeStmt     = "cannot prepare NodeAttribute insert statement"
@@ -30,12 +28,14 @@ const (
 	logCannotQueryNodeAttributeSelectStmt = "cannot query NodeAttribute select statement"
 )
 
-func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (graph model.Nodes, err error) {
+func SelectNodes(db *sql.DB, nodeClassKey model.NodeClassKey) (nodes model.Nodes, err error) {
+	nodes = model.Nodes{}
+
 	var nodeRows *sql.Rows
-	if strings.TrimSpace(nodeClassID) == "" {
+	if strings.TrimSpace(nodeClassKey.Namespace) == "" {
 		nodeRows, err = db.Query(selectNodeSQL)
 	} else {
-		nodeRows, err = db.Query(selectNodeSQLByClass, nodeClassID, nodeClassNamespace)
+		nodeRows, err = db.Query(selectNodeSQLByClass, nodeClassKey.ID, nodeClassKey.Namespace)
 	}
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
@@ -46,20 +46,17 @@ func SelectNodes(db *sql.DB, nodeClassID string, nodeClassNamespace string) (gra
 	for nodeRows.Next() {
 		var node model.Node
 
-		var nodeID, classID string
-		if err = nodeRows.Scan(&nodeID, &classID); err != nil {
+		if err = nodeRows.Scan(&node.ID, &node.NodeClassID, &node.NodeClassNamespace); err != nil {
 			return
 		}
-		node.ID = definition.GraphNodeID(classID, nodeID)
-		node.NodeClassID = classID
-		graph.Nodes = append(graph.Nodes, node)
+		nodes = append(nodes, node)
 	}
 
 	return
 }
-func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nodeID string) (graph model.Nodes, err error) {
+func ReadNodeByID(db *sql.DB, nodeKey model.NodeKey) (nodes model.Nodes, err error) {
 	var nodeRows *sql.Rows
-	nodeRows, err = db.Query(selectNodeSQLByID, nodeClassNamespace, nodeClassID, nodeID)
+	nodeRows, err = db.Query(selectNodeSQLByID, nodeKey.NodeClassNamespace, nodeKey.NodeClassID, nodeKey.ID)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
 		return
@@ -71,25 +68,8 @@ func ReadNodeByID(db *sql.DB, nodeClassNamespace string, nodeClassID string, nod
 		if err = nodeRows.Scan(&node.ID, &node.NodeClassID, &node.NodeClassNamespace); err != nil {
 			return
 		}
-		graph.Nodes = append(graph.Nodes, node)
+		nodes = append(nodes, node)
 	}
-
-	attributeRows, err := db.Query(selectNodeAttributeSQLByNodeID, nodeID, nodeClassID, nodeClassNamespace)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotQueryNodeAttributeSelectStmt)
-		return
-	}
-	defer attributeRows.Close()
-
-	//for attributeRows.Next() {
-	//	var attribute model.NodeAttribute
-	//	if err = attributeRows.Scan(&attribute.NodeClassAttributeID, &attribute.Value); err != nil {
-	//		return
-	//	}
-	//
-	//	// TODO - lazy
-	//	graph.Nodes[0].Attributes = append(graph.Nodes[0].Attributes, attribute)
-	//}
 
 	return
 }

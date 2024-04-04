@@ -11,6 +11,8 @@ const (
 )
 
 func SelectNamespaces(db *sql.DB) (namespaces model.Namespaces, err error) {
+	namespaces = model.Namespaces{}
+
 	namespaceRows, err := db.Query(selectNamespacesSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNamespaceSelectStmt)

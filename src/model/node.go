@@ -1,9 +1,7 @@
 package model
 
 type (
-	Nodes struct {
-		Nodes []Node `json:"nodes"`
-	}
+	Nodes []Node
 
 	NodeKey struct {
 		ID                 string `json:"id"`

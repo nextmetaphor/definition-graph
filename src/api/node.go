@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/nextmetaphor/definition-graph/db"
+	"github.com/nextmetaphor/definition-graph/model"
 	"net/http"
 )
 
@@ -12,21 +13,22 @@ const (
 // function indirection to allow unit test stubs to be created
 var (
 	selectNodeFunc = db.SelectNodes
+	readNodeFunc   = db.ReadNodeByID
 )
 
 func selectNodeHandler(w http.ResponseWriter, r *http.Request) {
-	nodeClassNamespace := r.Header.Get(entityNamespace)
-	nodeClass := r.Header.Get(entityNodeClass)
-
-	data, err := selectNodeFunc(dbConn, nodeClass, nodeClassNamespace)
+	data, err := selectNodeFunc(dbConn, model.NodeClassKey{
+		ID:        r.Header.Get(paramNodeClassID),
+		Namespace: r.Header.Get(paramNodeClassNamespace),
+	})
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeGraph)
 }
 
 func readNodeHandler(w http.ResponseWriter, r *http.Request) {
-	namespace := r.Header.Get(entityNamespace)
-	nodeClassID := r.Header.Get(entityNodeClass)
-	nodeID := r.PathValue(entityNode)
-
-	data, err := db.ReadNodeByID(dbConn, namespace, nodeClassID, nodeID)
+	data, err := readNodeFunc(dbConn, model.NodeKey{
+		ID:                 r.Header.Get(paramID),
+		NodeClassID:        r.Header.Get(paramNodeClassID),
+		NodeClassNamespace: r.Header.Get(paramNodeClassNamespace),
+	})
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotReadNode)
 }

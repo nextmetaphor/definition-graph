@@ -45,8 +45,9 @@ const (
 	pathNodeClassAttributeRootEntity = pathNodeClassAttributeRoot + "/"
 
 	// Node URL paths
-	pathNodeRoot = "/" + entityNode
-	pathNode     = pathNodeRoot + "/{" + entityNode + "}"
+	pathNodeRoot       = "/" + entityNode
+	pathNodeRootEntity = pathNodeRoot + "/"
+	pathNode           = pathNodeRoot + "/{" + entityNode + "}"
 
 	pathNodeClassGraph = "/" + entityGraph + "/" + entityNodeClass
 	pathNodeGraph      = "/" + entityGraph + "/" + entityNode

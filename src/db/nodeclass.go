@@ -25,6 +25,7 @@ const (
 
 // SelectNodeClass selects all NodeClass records from the database.
 func SelectNodeClass(db *sql.DB) (nodeClasses model.NodeClasses, err error) {
+	nodeClasses = model.NodeClasses{}
 	nodeClassRows, err := db.Query(selectNodeClassSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
