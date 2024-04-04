@@ -16,6 +16,15 @@ const (
 	entityNode               = "node"
 	entityGraph              = "graph"
 
+	paramID                            = "id"
+	paramNodeClassID                   = "node-class-id"
+	paramNodeClassNamespace            = "node-class-namespace"
+	paramSourceNodeClassID             = "source-" + paramNodeClassID
+	paramSourceNodeClassNamespace      = "source-" + paramNodeClassNamespace
+	paramDestinationNodeClassID        = "destination-" + paramNodeClassID
+	paramDestinationNodeClassNamespace = "destination-" + paramNodeClassNamespace
+	paramRelationship                  = "relationship"
+
 	pathNamespaceRoot = "/" + entityNamespace
 	pathNamespace     = pathNamespaceRoot + "/{" + entityNamespace + "}"
 
@@ -66,10 +75,6 @@ func Listen(conn *sql.DB) {
 
 	mux := http.NewServeMux()
 
-	// node functions
-	mux.HandleFunc(pathNode, readNodeHandler)
-	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
-
 	// namespace functions
 	mux.HandleFunc(pathNamespaceRoot, selectNamespaceHandler)
 
@@ -93,6 +98,10 @@ func Listen(conn *sql.DB) {
 	mux.HandleFunc("GET "+pathNodeClassAttributeRootEntity, readNodeClassAttributeHandler)
 	mux.HandleFunc("PUT "+pathNodeClassAttributeRootEntity, updateNodeClassAttributeHandler)
 	mux.HandleFunc("DELETE "+pathNodeClassAttributeRootEntity, deleteNodeClassAttributeHandler)
+
+	// node functions
+	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
+	mux.HandleFunc(pathNode, readNodeHandler)
 
 	// graph functions
 	mux.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)
