@@ -13,7 +13,7 @@ const (
 // function indirection to allow unit test stubs to be created
 var (
 	selectNodeFunc = db.SelectNodes
-	readNodeFunc   = db.ReadNodeByID
+	readNodeFunc   = db.ReadNode
 )
 
 func selectNodeHandler(w http.ResponseWriter, r *http.Request) {

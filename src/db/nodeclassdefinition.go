@@ -58,39 +58,3 @@ func StoreNodeClassSpecification(db *sql.DB, ncs *definition.NodeClassSpecificat
 
 	return nil
 }
-
-func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
-	nodeRows, err := db.Query(selectNodeClassSQL)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
-		return
-	}
-	defer nodeRows.Close()
-
-	for nodeRows.Next() {
-		var node definition.GraphNode
-		if err = nodeRows.Scan(&node.ID, &node.Namespace, &node.Description); err != nil {
-			return
-		}
-		node.Class = node.ID
-		graph.Nodes = append(graph.Nodes, node)
-	}
-
-	linkRows, err := db.Query(selectNodeClassEdgeSQL)
-
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotQueryNodeClassEdgeSelectStmt)
-		return
-	}
-	defer linkRows.Close()
-
-	for linkRows.Next() {
-		var link definition.GraphLink
-		if err = linkRows.Scan(&link.Source, &link.Target, &link.Relationship); err != nil {
-			return
-		}
-		graph.Links = append(graph.Links, link)
-	}
-
-	return
-}

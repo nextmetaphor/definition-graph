@@ -10,9 +10,9 @@ import (
 
 const (
 	insertNodeSQL        = `INSERT INTO Node (ID, NodeClassID) values (?, ?);`
-	selectNodeSQL        = `SELECT ID, NodeClassID, NodeClassNamespace from Node`
-	selectNodeSQLByClass = `SELECT ID, NodeClassID, NodeClassNamespace from Node where NodeClassID=? and NodeClassNameSpace=?`
-	selectNodeSQLByID    = `SELECT ID, NodeClassID, NodeClassNamespace from Node where NodeClassNameSpace=? and NodeClassID=? and ID=?`
+	selectNodeSQL        = `SELECT ID, NodeClassID, NodeClassNamespace FROM Node ORDER BY NodeClassNamespace, ID`
+	selectNodeSQLByClass = `SELECT ID, NodeClassID, NodeClassNamespace FROM Node WHERE NodeClassID=? AND NodeClassNameSpace=? ORDER BY NodeClassNamespace, ID`
+	selectNodeSQLByID    = `SELECT ID, NodeClassID, NodeClassNamespace FROM Node WHERE ID=? AND NodeClassID=? AND NodeClassNameSpace=?`
 
 	logCannotPrepareNodeStmt              = "cannot prepare GraphNode insert statement"
 	logCannotPrepareNodeAttributeStmt     = "cannot prepare NodeAttribute insert statement"
@@ -54,7 +54,7 @@ func SelectNodes(db *sql.DB, nodeClassKey model.NodeClassKey) (nodes model.Nodes
 
 	return
 }
-func ReadNodeByID(db *sql.DB, nodeKey model.NodeKey) (nodes model.Nodes, err error) {
+func ReadNode(db *sql.DB, nodeKey model.NodeKey) (nodes model.Nodes, err error) {
 	var nodeRows *sql.Rows
 	nodeRows, err = db.Query(selectNodeSQLByID, nodeKey.NodeClassNamespace, nodeKey.NodeClassID, nodeKey.ID)
 	if err != nil {

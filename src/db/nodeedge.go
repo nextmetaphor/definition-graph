@@ -3,12 +3,9 @@ package db
 import (
 	"database/sql"
 	"github.com/nextmetaphor/definition-graph/model"
-	"github.com/rs/zerolog/log"
 )
 
 const (
-	selectNodeEdgeSQL = `SELECT SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship from NodeEdge;`
-
 	selectNodeEdgeBySourceNodeSQL = `SELECT SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship FROM NodeEdge WHERE SourceNodeID=? AND SourceNodeClassID=? AND SourceNodeClassNamespace=? ORDER BY DestinationNodeID, DestinationNodeClassNamespace, DestinationNodeClassID;`
 
 	insertNodeEdgeSQL = `INSERT INTO NodeEdge (SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship) values (?, ?, ?, ?, ?, ?, ?);`
@@ -17,73 +14,76 @@ const (
 	deleteNodeEdgeSQL = `DELETE FROM NodeEdge WHERE SourceNodeID=? AND SourceNodeClassID=? AND SourceNodeClassNamespace=? AND DestinationNodeID=? AND DestinationNodeClassID=? AND DestinationNodeClassNamespace=? AND Relationship=?;`
 )
 
-func SelectNodeEdgeBySourceNode(db *sql.DB, nodeClassKey model.NodeClassKey) (nodeClassEdges model.NodeClassEdges, err error) {
-	nodeClassEdges = model.NodeClassEdges{}
+func SelectNodeEdgeBySourceNode(db *sql.DB, nodeKey model.NodeKey) (nodeEdges model.NodeEdges, err error) {
+	nodeEdges = model.NodeEdges{}
 
-	rows, err := db.Query(selectNodeClassEdgeBySourceNodeClassSQL, nodeClassKey.ID, nodeClassKey.Namespace)
+	rows, err := db.Query(selectNodeEdgeBySourceNodeSQL, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
 	if err != nil {
-		log.Error().Err(err)
 		return
 	}
 	defer rows.Close()
 
-	var nce model.NodeClassEdge
+	var ne model.NodeEdge
 	for rows.Next() {
-		if err = rows.Scan(&nce.SourceNodeClassID, &nce.SourceNodeClassNamespace, &nce.DestinationNodeClassID, &nce.DestinationNodeClassNamespace, &nce.Relationship); err != nil {
-			log.Error().Err(err)
+		if err = rows.Scan(&ne.SourceNodeID, &ne.SourceNodeClassID, &ne.SourceNodeClassNamespace, &ne.DestinationNodeID, &ne.DestinationNodeClassID, &ne.DestinationNodeClassNamespace, &ne.Relationship); err != nil {
 			return
 		}
-		nodeClassEdges = append(nodeClassEdges, nce)
+		nodeEdges = append(nodeEdges, ne)
 	}
 
 	return
 }
 
-func CreateNodeEdge(c *sql.DB, nce model.NodeClassEdge) (e error) {
-	s, e := c.Prepare(insertNodeClassEdgeSQL)
+func CreateNodeEdge(c *sql.DB, ne model.NodeEdge) (e error) {
+	s, e := c.Prepare(insertNodeEdgeSQL)
 	if e != nil {
-		log.Error().Err(e)
 		return
 	}
-	_, e = s.Exec(nce.SourceNodeClassID, nce.SourceNodeClassNamespace, nce.DestinationNodeClassID, nce.DestinationNodeClassNamespace, nce.Relationship)
+	_, e = s.Exec(ne.SourceNodeID, ne.SourceNodeClassID, ne.SourceNodeClassNamespace, ne.DestinationNodeID, ne.DestinationNodeClassID, ne.DestinationNodeClassNamespace, ne.Relationship)
 	if e != nil {
-		log.Error().Err(e)
 		return
 	}
 
 	return
 }
 
-func ReadNodeEdge(c *sql.DB, key model.NodeClassEdgeKey) (nce model.NodeClassEdge, e error) {
-	rows, e := c.Query(readNodeClassEdgeSQL, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+func ReadNodeEdge(c *sql.DB, key model.NodeEdgeKey) (ne *model.NodeEdge, e error) {
+	rows, e := c.Query(readNodeEdgeSQL, key.SourceNodeID, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeID, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
 	if e != nil {
 		return
 	}
 
 	defer rows.Close()
 	if rows.Next() {
-		e = rows.Scan(&nce.SourceNodeClassID, &nce.SourceNodeClassNamespace, &nce.DestinationNodeClassID, &nce.DestinationNodeClassNamespace, &nce.Relationship)
+		ne = new(model.NodeEdge)
+		e = rows.Scan(&ne.SourceNodeID, &ne.SourceNodeClassID, &ne.SourceNodeClassNamespace, &ne.DestinationNodeID, &ne.DestinationNodeClassID, &ne.DestinationNodeClassNamespace, &ne.Relationship)
 	}
 
 	return
 }
 
-func UpdateNodeEdge(c *sql.DB, key model.NodeClassEdgeKey, nce model.NodeClassEdge) (e error) {
-	s, e := c.Prepare(updateNodeClassEdgeSQL)
+func UpdateNodeEdge(c *sql.DB, key model.NodeEdgeKey, ne model.NodeEdge) (count int64, e error) {
+	s, e := c.Prepare(updateNodeEdgeSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(nce.SourceNodeClassID, nce.SourceNodeClassNamespace, nce.DestinationNodeClassID, nce.DestinationNodeClassNamespace, nce.Relationship, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	r, e := s.Exec(ne.SourceNodeID, ne.SourceNodeClassID, ne.SourceNodeClassNamespace, ne.DestinationNodeID, ne.DestinationNodeClassID, ne.DestinationNodeClassNamespace, ne.Relationship, key.SourceNodeID, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeID, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	if r != nil {
+		count, _ = r.RowsAffected()
+	}
 
 	return
 }
 
-func DeleteNodeEdge(c *sql.DB, key model.NodeClassEdgeKey) (e error) {
-	s, e := c.Prepare(deleteNodeClassEdgeSQL)
+func DeleteNodeEdge(c *sql.DB, key model.NodeEdgeKey) (count int64, e error) {
+	s, e := c.Prepare(deleteNodeEdgeSQL)
 	if e != nil {
 		return
 	}
-	_, e = s.Exec(key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	r, e := s.Exec(key.SourceNodeID, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeID, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
+	if r != nil {
+		count, _ = r.RowsAffected()
+	}
 
 	return
 }

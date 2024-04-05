@@ -47,7 +47,6 @@ func CreateNodeClassEdge(c *sql.DB, nce model.NodeClassEdge) (e error) {
 	}
 	_, e = s.Exec(nce.SourceNodeClassID, nce.SourceNodeClassNamespace, nce.DestinationNodeClassID, nce.DestinationNodeClassNamespace, nce.Relationship)
 	if e != nil {
-		log.Error().Err(e)
 		return
 	}
 

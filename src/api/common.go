@@ -21,12 +21,16 @@ const (
 	// HTTP header parameter constants
 	paramID                            = "id"
 	paramNamespace                     = "namespace"
+	paramNodeID                        = "node-id"
 	paramNodeClassID                   = "node-class-id"
 	paramNodeClassNamespace            = "node-class-namespace"
+	paramSourceNodeID                  = "source-node-" + paramID
 	paramSourceNodeClassID             = "source-" + paramNodeClassID
 	paramSourceNodeClassNamespace      = "source-" + paramNodeClassNamespace
+	paramDestinationNodeID             = "destination-node-" + paramID
 	paramDestinationNodeClassID        = "destination-" + paramNodeClassID
 	paramDestinationNodeClassNamespace = "destination-" + paramNodeClassNamespace
+	paramDestinationNodeNamespace      = "destination-node-" + paramNamespace
 	paramRelationship                  = "relationship"
 
 	// Namespace URL paths
@@ -48,6 +52,10 @@ const (
 	pathNodeRoot       = "/" + entityNode
 	pathNodeRootEntity = pathNodeRoot + "/"
 	pathNode           = pathNodeRoot + "/{" + entityNode + "}"
+
+	// NodeCEdge URL paths
+	pathNodeEdgeRoot       = "/" + entityNodeEdge
+	pathNodeEdgeRootEntity = pathNodeEdgeRoot + "/"
 
 	pathNodeClassGraph = "/" + entityGraph + "/" + entityNodeClass
 	pathNodeGraph      = "/" + entityGraph + "/" + entityNode
@@ -111,6 +119,10 @@ func Listen(conn *sql.DB) {
 	// node functions
 	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
 	mux.HandleFunc(pathNode, readNodeHandler)
+
+	// nodeEdge functions
+	mux.HandleFunc(pathNodeEdgeRoot, selectNodeEdgeBySourceNodeHandler)
+	mux.HandleFunc("GET "+pathNodeEdgeRootEntity, readNodeEdgeHandler)
 
 	// graph functions
 	mux.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)
