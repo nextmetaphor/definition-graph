@@ -24,6 +24,7 @@ const (
 	paramNodeID                        = "node-id"
 	paramNodeClassID                   = "node-class-id"
 	paramNodeClassNamespace            = "node-class-namespace"
+	paramNodeClassAttributeID          = "node-class-attribute-id"
 	paramSourceNodeID                  = "source-node-" + paramID
 	paramSourceNodeClassID             = "source-" + paramNodeClassID
 	paramSourceNodeClassNamespace      = "source-" + paramNodeClassNamespace
@@ -53,7 +54,11 @@ const (
 	pathNodeRootEntity = pathNodeRoot + "/"
 	pathNode           = pathNodeRoot + "/{" + entityNode + "}"
 
-	// NodeCEdge URL paths
+	// NodeAttribute URL paths
+	pathNodeAttributeRoot       = "/" + entityNodeAttribute
+	pathNodeAttributeRootEntity = pathNodeAttributeRoot + "/"
+
+	// NodeEdge URL paths
 	pathNodeEdgeRoot       = "/" + entityNodeEdge
 	pathNodeEdgeRootEntity = pathNodeEdgeRoot + "/"
 
@@ -120,9 +125,19 @@ func Listen(conn *sql.DB) {
 	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
 	mux.HandleFunc(pathNode, readNodeHandler)
 
+	// nodeAttribute functions
+	mux.HandleFunc(pathNodeAttributeRoot, selectNodeAttributeHandler)
+	mux.HandleFunc("POST "+pathNodeAttributeRoot, createNodeAttributeHandler)
+	mux.HandleFunc("GET "+pathNodeAttributeRootEntity, readNodeAttributeHandler)
+	mux.HandleFunc("PUT "+pathNodeAttributeRootEntity, updateNodeAttributeHandler)
+	mux.HandleFunc("DELETE "+pathNodeAttributeRootEntity, deleteNodeAttributeHandler)
+
 	// nodeEdge functions
 	mux.HandleFunc(pathNodeEdgeRoot, selectNodeEdgeBySourceNodeHandler)
+	mux.HandleFunc("POST "+pathNodeEdgeRoot, createNodeEdgeHandler)
 	mux.HandleFunc("GET "+pathNodeEdgeRootEntity, readNodeEdgeHandler)
+	mux.HandleFunc("PUT "+pathNodeEdgeRootEntity, updateNodeEdgeHandler)
+	mux.HandleFunc("DELETE "+pathNodeEdgeRootEntity, deleteNodeEdgeHandler)
 
 	// graph functions
 	mux.HandleFunc(pathNodeClassGraph, nodeClassGraphHandler)
