@@ -52,7 +52,6 @@ const (
 	// Node URL paths
 	pathNodeRoot       = "/" + entityNode
 	pathNodeRootEntity = pathNodeRoot + "/"
-	pathNode           = pathNodeRoot + "/{" + entityNode + "}"
 
 	// NodeAttribute URL paths
 	pathNodeAttributeRoot       = "/" + entityNodeAttribute
@@ -123,7 +122,10 @@ func Listen(conn *sql.DB) {
 
 	// node functions
 	mux.HandleFunc(pathNodeRoot, selectNodeHandler)
-	mux.HandleFunc(pathNode, readNodeHandler)
+	mux.HandleFunc("POST "+pathNodeRoot, createNodeHandler)
+	mux.HandleFunc("GET "+pathNodeRootEntity, readNodeHandler)
+	mux.HandleFunc("PUT "+pathNodeRootEntity, updateNodeHandler)
+	mux.HandleFunc("DELETE "+pathNodeRootEntity, deleteNodeHandler)
 
 	// nodeAttribute functions
 	mux.HandleFunc(pathNodeAttributeRoot, selectNodeAttributeHandler)
