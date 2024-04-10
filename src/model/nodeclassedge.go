@@ -4,10 +4,10 @@ type (
 	NodeClassEdges []NodeClassEdge
 
 	NodeClassEdgeKey struct {
-		SourceNodeClassID             string `json:"source-node-class-id"`
-		SourceNodeClassNamespace      string `json:"source-node-class-namespace"`
-		DestinationNodeClassID        string `json:"destination-node-class-id"`
-		DestinationNodeClassNamespace string `json:"destination-node-class-namespace"`
+		SourceNodeClassID             string `json:"sourceNodeClassID"`
+		SourceNodeClassNamespace      string `json:"sourceNodeClassNamespace"`
+		DestinationNodeClassID        string `json:"destinationNodeClassID"`
+		DestinationNodeClassNamespace string `json:"destinationNodeClassNamespace"`
 		Relationship                  string `json:"relationship"`
 	}
 
