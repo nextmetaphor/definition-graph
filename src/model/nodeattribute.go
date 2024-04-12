@@ -4,10 +4,10 @@ type (
 	NodeAttributes []NodeAttribute
 
 	NodeAttributeKey struct {
-		NodeID               string `json:"node-id"`
-		NodeClassID          string `json:"node-class-id"`
-		NodeClassNamespace   string `json:"node-class-namespace"`
-		NodeClassAttributeID string `json:"node-class-attribute-id"`
+		NodeID               string `json:"nodeID"`
+		NodeClassID          string `json:"nodeClassID"`
+		NodeClassNamespace   string `json:"nodeClassNamespace"`
+		NodeClassAttributeID string `json:"nodeClassAttributeID"`
 	}
 
 	NodeAttribute struct {

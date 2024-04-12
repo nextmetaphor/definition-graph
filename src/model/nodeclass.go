@@ -4,7 +4,7 @@ type (
 	NodeClasses []NodeClass
 
 	NodeClassKey struct {
-		ID        string `json:"id"`
+		ID        string `json:"ID"`
 		Namespace string `json:"namespace"`
 	}
 

@@ -4,12 +4,12 @@ type (
 	NodeEdges []NodeEdge
 
 	NodeEdgeKey struct {
-		SourceNodeID                  string `json:"source-node-id"`
-		SourceNodeClassID             string `json:"source-node-class-id"`
-		SourceNodeClassNamespace      string `json:"source-node-class-namespace"`
-		DestinationNodeID             string `json:"destination-node-id"`
-		DestinationNodeClassID        string `json:"destination-node-class-id"`
-		DestinationNodeClassNamespace string `json:"destination-node-class-namespace"`
+		SourceNodeID                  string `json:"sourceNodeID"`
+		SourceNodeClassID             string `json:"sourceNodeClassID"`
+		SourceNodeClassNamespace      string `json:"sourceNodeClassNamespace"`
+		DestinationNodeID             string `json:"destinationNodeID"`
+		DestinationNodeClassID        string `json:"destinationNodeClassID"`
+		DestinationNodeClassNamespace string `json:"destinationNodeClassNamespace"`
 		Relationship                  string `json:"relationship"`
 	}
 

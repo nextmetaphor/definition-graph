@@ -19,19 +19,19 @@ const (
 	entityGraph              = "graph"
 
 	// HTTP header parameter constants
-	paramID                            = "id"
+	paramID                            = "ID"
 	paramNamespace                     = "namespace"
-	paramNodeID                        = "node-id"
-	paramNodeClassID                   = "node-class-id"
-	paramNodeClassNamespace            = "node-class-namespace"
-	paramNodeClassAttributeID          = "node-class-attribute-id"
-	paramSourceNodeID                  = "source-node-" + paramID
-	paramSourceNodeClassID             = "source-" + paramNodeClassID
-	paramSourceNodeClassNamespace      = "source-" + paramNodeClassNamespace
-	paramDestinationNodeID             = "destination-node-" + paramID
-	paramDestinationNodeClassID        = "destination-" + paramNodeClassID
-	paramDestinationNodeClassNamespace = "destination-" + paramNodeClassNamespace
-	paramDestinationNodeNamespace      = "destination-node-" + paramNamespace
+	paramNodeID                        = "nodeID"
+	paramNodeClassID                   = "nodeClassID"
+	paramNodeClassNamespace            = "nodeClassNamespace"
+	paramNodeClassAttributeID          = "nodeClassAttributeID"
+	paramSourceNodeID                  = "sourceNodeID"
+	paramSourceNodeClassID             = "sourceNodeClassID"
+	paramSourceNodeClassNamespace      = "sourceNodeClassNamespace"
+	paramDestinationNodeID             = "destinationNodeID"
+	paramDestinationNodeClassID        = "destinationNodeClassID"
+	paramDestinationNodeClassNamespace = "destinationNodeClassNamespace"
+	paramDestinationNodeNamespace      = "destinationNodeNamespace"
 	paramRelationship                  = "relationship"
 
 	// Namespace URL paths
