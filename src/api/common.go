@@ -73,7 +73,7 @@ func preflightHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO - sort this out
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
 
 	w.WriteHeader(http.StatusNoContent)
 }
