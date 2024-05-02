@@ -17,6 +17,7 @@ const (
 	entityNodeAttribute      = "nodeattribute"
 	entityNodeEdge           = "nodeedge"
 	entityGraph              = "graph"
+	entityDefinition         = "definition"
 
 	// HTTP header parameter constants
 	paramID                            = "ID"
@@ -63,6 +64,8 @@ const (
 
 	pathNodeClassGraph = "/" + entityGraph + "/" + entityNodeClass
 	pathNodeGraph      = "/" + entityGraph + "/" + entityNode
+
+	pathDefinitionRoot = "/" + entityDefinition
 )
 
 var (
@@ -105,68 +108,72 @@ func Listen(conn *sql.DB) {
 	mux := http.NewServeMux()
 
 	// namespace functions
-	mux.HandleFunc("OPTIONS "+pathNamespaceRoot, preflightHandler)
-	mux.HandleFunc("GET "+pathNamespaceRoot, selectNamespaceHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNamespaceRoot, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNamespaceRoot, selectNamespaceHandler)
 
 	// nodeClass functions
-	mux.HandleFunc("OPTIONS "+pathNodeClassRoot, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeClassRootEntity, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeClassRoot, selectNodeClassHandler)
-	mux.HandleFunc("POST "+pathNodeClassRoot, createNodeClassHandler)
-	mux.HandleFunc("GET "+pathNodeClassRootEntity, readNodeClassHandler)
-	mux.HandleFunc("PUT "+pathNodeClassRootEntity, updateNodeClassHandler)
-	mux.HandleFunc("DELETE "+pathNodeClassRootEntity, deleteNodeClassHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassRoot, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassRootEntity, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassRoot, selectNodeClassHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeClassRoot, createNodeClassHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassRootEntity, readNodeClassHandler)
+	mux.HandleFunc(http.MethodPut+" "+pathNodeClassRootEntity, updateNodeClassHandler)
+	mux.HandleFunc(http.MethodDelete+" "+pathNodeClassRootEntity, deleteNodeClassHandler)
 
 	// nodeClassEdge functions
-	mux.HandleFunc("OPTIONS "+pathNodeClassEdgeRoot, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeClassEdgeRootEntity, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeClassEdgeRoot, selectNodeClassEdgeBySourceNodeClassHandler)
-	mux.HandleFunc("POST "+pathNodeClassEdgeRoot, createNodeClassEdgeHandler)
-	mux.HandleFunc("GET "+pathNodeClassEdgeRootEntity, readNodeClassEdgeHandler)
-	mux.HandleFunc("PUT "+pathNodeClassEdgeRootEntity, updateNodeClassEdgeHandler)
-	mux.HandleFunc("DELETE "+pathNodeClassEdgeRootEntity, deleteNodeClassEdgeHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassEdgeRoot, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassEdgeRootEntity, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassEdgeRoot, selectNodeClassEdgeBySourceNodeClassHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeClassEdgeRoot, createNodeClassEdgeHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassEdgeRootEntity, readNodeClassEdgeHandler)
+	mux.HandleFunc(http.MethodPut+" "+pathNodeClassEdgeRootEntity, updateNodeClassEdgeHandler)
+	mux.HandleFunc(http.MethodDelete+" "+pathNodeClassEdgeRootEntity, deleteNodeClassEdgeHandler)
 
 	//nodeClassAttribute functions
-	mux.HandleFunc("OPTIONS "+pathNodeClassAttributeRoot, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeClassAttributeRootEntity, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeClassAttributeRoot, selectNodeClassAttributeHandler)
-	mux.HandleFunc("POST "+pathNodeClassAttributeRoot, createNodeClassAttributeHandler)
-	mux.HandleFunc("GET "+pathNodeClassAttributeRootEntity, readNodeClassAttributeHandler)
-	mux.HandleFunc("PUT "+pathNodeClassAttributeRootEntity, updateNodeClassAttributeHandler)
-	mux.HandleFunc("DELETE "+pathNodeClassAttributeRootEntity, deleteNodeClassAttributeHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassAttributeRoot, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassAttributeRootEntity, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassAttributeRoot, selectNodeClassAttributeHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeClassAttributeRoot, createNodeClassAttributeHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassAttributeRootEntity, readNodeClassAttributeHandler)
+	mux.HandleFunc(http.MethodPut+" "+pathNodeClassAttributeRootEntity, updateNodeClassAttributeHandler)
+	mux.HandleFunc(http.MethodDelete+" "+pathNodeClassAttributeRootEntity, deleteNodeClassAttributeHandler)
 
 	// node functions
-	mux.HandleFunc("OPTIONS "+pathNodeRoot, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeRootEntity, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeRoot, selectNodeHandler)
-	mux.HandleFunc("POST "+pathNodeRoot, createNodeHandler)
-	mux.HandleFunc("GET "+pathNodeRootEntity, readNodeHandler)
-	mux.HandleFunc("PUT "+pathNodeRootEntity, updateNodeHandler)
-	mux.HandleFunc("DELETE "+pathNodeRootEntity, deleteNodeHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeRoot, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeRootEntity, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeRoot, selectNodeHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeRoot, createNodeHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeRootEntity, readNodeHandler)
+	mux.HandleFunc(http.MethodPut+" "+pathNodeRootEntity, updateNodeHandler)
+	mux.HandleFunc(http.MethodDelete+" "+pathNodeRootEntity, deleteNodeHandler)
 
 	// nodeAttribute functions
-	mux.HandleFunc("OPTIONS "+pathNodeAttributeRoot, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeAttributeRootEntity, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeAttributeRoot, selectNodeAttributeHandler)
-	mux.HandleFunc("POST "+pathNodeAttributeRoot, createNodeAttributeHandler)
-	mux.HandleFunc("GET "+pathNodeAttributeRootEntity, readNodeAttributeHandler)
-	mux.HandleFunc("PUT "+pathNodeAttributeRootEntity, updateNodeAttributeHandler)
-	mux.HandleFunc("DELETE "+pathNodeAttributeRootEntity, deleteNodeAttributeHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeAttributeRoot, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeAttributeRootEntity, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeAttributeRoot, selectNodeAttributeHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeAttributeRoot, createNodeAttributeHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeAttributeRootEntity, readNodeAttributeHandler)
+	mux.HandleFunc(http.MethodPut+" "+pathNodeAttributeRootEntity, updateNodeAttributeHandler)
+	mux.HandleFunc(http.MethodDelete+" "+pathNodeAttributeRootEntity, deleteNodeAttributeHandler)
 
 	// nodeEdge functions
-	mux.HandleFunc("OPTIONS "+pathNodeEdgeRoot, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeEdgeRootEntity, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeEdgeRoot, selectNodeEdgeBySourceNodeHandler)
-	mux.HandleFunc("POST "+pathNodeEdgeRoot, createNodeEdgeHandler)
-	mux.HandleFunc("GET "+pathNodeEdgeRootEntity, readNodeEdgeHandler)
-	mux.HandleFunc("PUT "+pathNodeEdgeRootEntity, updateNodeEdgeHandler)
-	mux.HandleFunc("DELETE "+pathNodeEdgeRootEntity, deleteNodeEdgeHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeEdgeRoot, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeEdgeRootEntity, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeEdgeRoot, selectNodeEdgeBySourceNodeHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeEdgeRoot, createNodeEdgeHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeEdgeRootEntity, readNodeEdgeHandler)
+	mux.HandleFunc(http.MethodPut+" "+pathNodeEdgeRootEntity, updateNodeEdgeHandler)
+	mux.HandleFunc(http.MethodDelete+" "+pathNodeEdgeRootEntity, deleteNodeEdgeHandler)
 
 	// graph functions
-	mux.HandleFunc("OPTIONS "+pathNodeClassGraph, preflightHandler)
-	mux.HandleFunc("OPTIONS "+pathNodeGraph, preflightHandler)
-	mux.HandleFunc("GET "+pathNodeClassGraph, nodeClassGraphHandler)
-	mux.HandleFunc("GET "+pathNodeGraph, nodeGraphHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeClassGraph, preflightHandler)
+	mux.HandleFunc(http.MethodOptions+" "+pathNodeGraph, preflightHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassGraph, nodeClassGraphHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeGraph, nodeGraphHandler)
+
+	// definition functions
+	mux.HandleFunc(http.MethodPost+" "+pathDefinitionRoot, loadDefinitionsHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathDefinitionRoot, saveDefinitionsHandler)
 
 	port := ":8080"
 	fmt.Printf("Server listening on port %s...\n", port)
