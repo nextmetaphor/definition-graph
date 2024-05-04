@@ -1,0 +1,10 @@
+FROM alpine:latest
+# create a dfngraph user and group
+RUN apk add --no-cache sqlite && addgroup gdfngrph && adduser -D -g "definition-graph user" dfngrph -G gdfngrph
+# copy the required files into the installation directory
+COPY --chown=dfngrph:gdfngrph ./utils/* /opt/definition-graph/
+# create symlink in /usr/bin to the yaml-graph binary
+RUN ln -s /opt/definition-graph/definition-graph /usr/bin/definition-graph
+USER dfngrph
+WORKDIR /home/dfngraph
+ENTRYPOINT ["/opt/definition-graph/definition-graph"]

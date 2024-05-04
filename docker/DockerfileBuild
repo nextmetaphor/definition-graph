@@ -1,0 +1,3 @@
+FROM golang:1.22.2-alpine
+WORKDIR /usr/src/definition-graph
+RUN apk add build-base

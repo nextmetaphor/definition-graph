@@ -3,3 +3,4 @@
 **/*.db
 **/definition-graph
 profile.cov
+.buildcache
