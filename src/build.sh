@@ -2,7 +2,7 @@
 
 #export GOOS=linux
 #export GARCH=amd64
-#export CGO_ENABLED=1
+export CGO_ENABLED=1
 
 #apk add build-base
 #
