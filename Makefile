@@ -1,5 +1,5 @@
 # variable for common working directory and build cache arguments
-docker_dir_args = -v $(PWD)/src:/usr/src/definition-graph -v $(PWD)/docker/.buildcache/pkg:/go/pkg -w /usr/src/definition-graph nextmetaphor/definition-graph-build:latest
+docker_dir_args = -v $(PWD)/src:/usr/src/definition-graph -v $(PWD)/docker/.buildcache/pkg:/go/pkg -v $(PWD)/docker/.buildcache/cache:/go/cache -e GOCACHE=/go/cache -w /usr/src/definition-graph nextmetaphor/definition-graph-build:latest
 
 .PHONY: help
 help:	## show makefile help
