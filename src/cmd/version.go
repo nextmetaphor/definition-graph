@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Paul Tatham <paul@nextmetaphor.io>
+ * Copyright (C) 2024  Paul Tatham <paul@nextmetaphor.io>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,24 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package main
+package cmd
 
 import (
-	"github.com/nextmetaphor/definition-graph/cmd"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-	"os"
+	"fmt"
+	"github.com/spf13/cobra"
 )
 
-func GetLogger() zerolog.Logger {
-	return logger
+func init() {
+	rootCmd.AddCommand(versionCmd)
 }
 
-var (
-	logger zerolog.Logger
-)
-
-func main() {
-	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Caller().Logger()
-	cmd.Execute()
+var versionCmd = &cobra.Command{
+	Use:   commandVersionUse,
+	Short: commandVersionShort,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(commandVersionString)
+	},
 }

@@ -20,4 +20,4 @@ docker-build: 	## build definition-graph docker image
 	docker build --tag nextmetaphor/definition-graph:latest docker -f docker/DockerfileRun
 
 docker-run: docker-build ## run definition-graph docker image
-	docker run -it -p8080:8080 -v $(PWD)/definition:/home/dfngraph/definition nextmetaphor/definition-graph
+	docker run -it -p8080:8080 -v $(PWD)/definition:/home/dfngraph/definition nextmetaphor/definition-graph api
