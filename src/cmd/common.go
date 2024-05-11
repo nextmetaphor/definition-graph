@@ -37,6 +37,16 @@ const (
 	commandAPIUse   = "api"
 	commandAPIShort = "Start the " + appName + " API service"
 
+	flagAPIAddress          = "address"
+	flagAPIAddressShorthand = "a"
+	flagAPIAddressDefault   = ""
+	flagAPIAddressUsage     = "address for api"
+
+	flagAPIPort          = "port"
+	flagAPIPortShorthand = "p"
+	flagAPIPortDefault   = 8080
+	flagAPIPortUsage     = "port for api"
+
 	exitCodeRootCmdFailed = 1
 )
 
@@ -48,8 +58,17 @@ var (
 	}
 )
 
+var (
+	// variable for flagAPIPort parameter
+	apiServerPort int
+
+	// variable for flagAPIAddress parameter
+	apiServerHost string
+)
+
 // Execute TODO
 func Execute() {
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(exitCodeRootCmdFailed)
 	}

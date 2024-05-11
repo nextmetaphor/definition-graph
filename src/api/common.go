@@ -23,9 +23,12 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"strconv"
 )
 
 const (
+	logAPIServerListening = "API Server listening at %s"
+
 	entityNamespace          = "namespace"
 	entityNodeClass          = "nodeclass"
 	entityNodeClassEdge      = "nodeclassedge"
@@ -119,7 +122,7 @@ func writeHTTPResponse(returnCode int, data any, err error, w http.ResponseWrite
 	}
 }
 
-func Listen(conn *sql.DB) {
+func Listen(host string, port int, conn *sql.DB) {
 	dbConn = conn
 
 	mux := http.NewServeMux()
@@ -192,9 +195,10 @@ func Listen(conn *sql.DB) {
 	mux.HandleFunc(http.MethodPost+" "+pathDefinitionRoot, loadDefinitionsHandler)
 	mux.HandleFunc(http.MethodGet+" "+pathDefinitionRoot, saveDefinitionsHandler)
 
-	port := ":8080"
-	fmt.Printf("Server listening on port %s...\n", port)
-	err := http.ListenAndServe(port, mux)
+	listenAddress := host + ":" + strconv.Itoa(port)
+	log.Info().Msg(fmt.Sprintf(logAPIServerListening, listenAddress))
+
+	err := http.ListenAndServe(listenAddress, mux)
 	if err != nil {
 		panic(err)
 	}

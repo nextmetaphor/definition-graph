@@ -25,6 +25,8 @@ import (
 
 func init() {
 	rootCmd.AddCommand(apiCmd)
+	apiCmd.Flags().IntVarP(&apiServerPort, flagAPIPort, flagAPIPortShorthand, flagAPIPortDefault, flagAPIPortUsage)
+	apiCmd.Flags().StringVarP(&apiServerHost, flagAPIAddress, flagAPIAddressShorthand, flagAPIAddressDefault, flagAPIAddressUsage)
 }
 
 var apiCmd = &cobra.Command{
@@ -35,6 +37,6 @@ var apiCmd = &cobra.Command{
 
 		defer db.CloseDatabase(conn)
 
-		api.Listen(conn)
+		api.Listen(apiServerHost, apiServerPort, conn)
 	},
 }
