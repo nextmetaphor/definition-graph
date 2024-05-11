@@ -18,7 +18,6 @@
 package db
 
 import (
-	"database/sql"
 	"github.com/nextmetaphor/definition-graph/model"
 )
 
@@ -31,10 +30,11 @@ const (
 	deleteNodeEdgeSQL = `DELETE FROM NodeEdge WHERE SourceNodeID=? AND SourceNodeClassID=? AND SourceNodeClassNamespace=? AND DestinationNodeID=? AND DestinationNodeClassID=? AND DestinationNodeClassNamespace=? AND Relationship=?;`
 )
 
-func SelectNodeEdgeBySourceNode(db *sql.DB, nodeKey model.NodeKey) (nodeEdges model.NodeEdges, err error) {
+func SelectNodeEdgeBySourceNode(nodeKey model.NodeKey) (nodeEdges model.NodeEdges, err error) {
+	c := getDBConn()
 	nodeEdges = model.NodeEdges{}
 
-	rows, err := db.Query(selectNodeEdgeBySourceNodeSQL, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
+	rows, err := c.Query(selectNodeEdgeBySourceNodeSQL, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
 	if err != nil {
 		return
 	}
@@ -51,7 +51,8 @@ func SelectNodeEdgeBySourceNode(db *sql.DB, nodeKey model.NodeKey) (nodeEdges mo
 	return
 }
 
-func CreateNodeEdge(c *sql.DB, ne model.NodeEdge) (e error) {
+func CreateNodeEdge(ne model.NodeEdge) (e error) {
+	c := getDBConn()
 	s, e := c.Prepare(insertNodeEdgeSQL)
 	if e != nil {
 		return
@@ -64,7 +65,8 @@ func CreateNodeEdge(c *sql.DB, ne model.NodeEdge) (e error) {
 	return
 }
 
-func ReadNodeEdge(c *sql.DB, key model.NodeEdgeKey) (ne *model.NodeEdge, e error) {
+func ReadNodeEdge(key model.NodeEdgeKey) (ne *model.NodeEdge, e error) {
+	c := getDBConn()
 	rows, e := c.Query(readNodeEdgeSQL, key.SourceNodeID, key.SourceNodeClassID, key.SourceNodeClassNamespace, key.DestinationNodeID, key.DestinationNodeClassID, key.DestinationNodeClassNamespace, key.Relationship)
 	if e != nil {
 		return
@@ -79,7 +81,8 @@ func ReadNodeEdge(c *sql.DB, key model.NodeEdgeKey) (ne *model.NodeEdge, e error
 	return
 }
 
-func UpdateNodeEdge(c *sql.DB, key model.NodeEdgeKey, ne model.NodeEdge) (count int64, e error) {
+func UpdateNodeEdge(key model.NodeEdgeKey, ne model.NodeEdge) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(updateNodeEdgeSQL)
 	if e != nil {
 		return
@@ -92,7 +95,8 @@ func UpdateNodeEdge(c *sql.DB, key model.NodeEdgeKey, ne model.NodeEdge) (count 
 	return
 }
 
-func DeleteNodeEdge(c *sql.DB, key model.NodeEdgeKey) (count int64, e error) {
+func DeleteNodeEdge(key model.NodeEdgeKey) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(deleteNodeEdgeSQL)
 	if e != nil {
 		return

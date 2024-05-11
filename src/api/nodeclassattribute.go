@@ -42,7 +42,7 @@ var (
 )
 
 func selectNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNodeClassAttributeFunc(dbConn, model.NodeClassKey{
+	data, err := selectNodeClassAttributeFunc(model.NodeClassKey{
 		ID:        r.Header.Get(paramNodeClassID),
 		Namespace: r.Header.Get(paramNodeClassNamespace),
 	})
@@ -54,13 +54,13 @@ func createNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&nca)
 
 	if err == nil {
-		err = createNodeClassAttributeFunc(dbConn, nca)
+		err = createNodeClassAttributeFunc(nca)
 	}
 	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeClassAttribute)
 }
 
 func readNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
-	nca, err := readNodeClassAttributeFunc(dbConn, model.NodeClassAttributeKey{
+	nca, err := readNodeClassAttributeFunc(model.NodeClassAttributeKey{
 		ID:                 r.Header.Get(paramID),
 		NodeClassID:        r.Header.Get(paramNodeClassID),
 		NodeClassNamespace: r.Header.Get(paramNodeClassNamespace),
@@ -79,7 +79,7 @@ func updateNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotUpdateNodeClassAttribute)
 	} else {
-		count, err := updateNodeClassAttributeFunc(dbConn, model.NodeClassAttributeKey{
+		count, err := updateNodeClassAttributeFunc(model.NodeClassAttributeKey{
 			ID:                 r.Header.Get(paramID),
 			NodeClassID:        r.Header.Get(paramNodeClassID),
 			NodeClassNamespace: r.Header.Get(paramNodeClassNamespace),
@@ -93,7 +93,7 @@ func updateNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteNodeClassAttributeHandler(w http.ResponseWriter, r *http.Request) {
-	count, err := deleteNodeClassAttributeFunc(dbConn, model.NodeClassAttributeKey{
+	count, err := deleteNodeClassAttributeFunc(model.NodeClassAttributeKey{
 		ID:                 r.Header.Get(paramID),
 		NodeClassID:        r.Header.Get(paramNodeClassID),
 		NodeClassNamespace: r.Header.Get(paramNodeClassNamespace),

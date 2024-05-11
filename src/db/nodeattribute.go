@@ -18,7 +18,6 @@
 package db
 
 import (
-	"database/sql"
 	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
 )
@@ -32,10 +31,11 @@ const (
 	deleteNodeAttributeSQL = `DELETE FROM NodeAttribute WHERE NodeID=? AND NodeClassID=? AND NodeClassNamespace=? AND NodeClassAttributeID=?;`
 )
 
-func SelectNodeAttributeByNode(db *sql.DB, nodeKey model.NodeKey) (nodeAttributes model.NodeAttributes, err error) {
+func SelectNodeAttributeByNode(nodeKey model.NodeKey) (nodeAttributes model.NodeAttributes, err error) {
+	c := getDBConn()
 	nodeAttributes = model.NodeAttributes{}
 
-	rows, err := db.Query(selectNodeAttributeByNodeSQL, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
+	rows, err := c.Query(selectNodeAttributeByNodeSQL, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
 	if err != nil {
 		log.Error().Err(err)
 		return
@@ -54,7 +54,8 @@ func SelectNodeAttributeByNode(db *sql.DB, nodeKey model.NodeKey) (nodeAttribute
 	return
 }
 
-func CreateNodeAttribute(c *sql.DB, na model.NodeAttribute) (e error) {
+func CreateNodeAttribute(na model.NodeAttribute) (e error) {
+	c := getDBConn()
 	s, e := c.Prepare(insertNodeAttributeSQL)
 	if e != nil {
 		log.Error().Err(e)
@@ -69,7 +70,8 @@ func CreateNodeAttribute(c *sql.DB, na model.NodeAttribute) (e error) {
 	return
 }
 
-func ReadNodeAttribute(c *sql.DB, key model.NodeAttributeKey) (na *model.NodeAttribute, e error) {
+func ReadNodeAttribute(key model.NodeAttributeKey) (na *model.NodeAttribute, e error) {
+	c := getDBConn()
 	rows, e := c.Query(readNodeAttributeSQL, key.NodeID, key.NodeClassID, key.NodeClassNamespace, key.NodeClassAttributeID)
 	if e != nil {
 		return
@@ -84,7 +86,8 @@ func ReadNodeAttribute(c *sql.DB, key model.NodeAttributeKey) (na *model.NodeAtt
 	return
 }
 
-func UpdateNodeAttribute(c *sql.DB, key model.NodeAttributeKey, na model.NodeAttribute) (count int64, e error) {
+func UpdateNodeAttribute(key model.NodeAttributeKey, na model.NodeAttribute) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(updateNodeAttributeSQL)
 	if e != nil {
 		return
@@ -98,7 +101,8 @@ func UpdateNodeAttribute(c *sql.DB, key model.NodeAttributeKey, na model.NodeAtt
 	return
 }
 
-func DeleteNodeAttribute(c *sql.DB, key model.NodeAttributeKey) (count int64, e error) {
+func DeleteNodeAttribute(key model.NodeAttributeKey) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(deleteNodeAttributeSQL)
 	if e != nil {
 		return

@@ -42,7 +42,7 @@ var (
 )
 
 func selectNodeEdgeBySourceNodeHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNodeEdgeBySourceNodeFunc(dbConn, model.NodeKey{
+	data, err := selectNodeEdgeBySourceNodeFunc(model.NodeKey{
 		ID:                 r.Header.Get(paramSourceNodeID),
 		NodeClassID:        r.Header.Get(paramSourceNodeClassID),
 		NodeClassNamespace: r.Header.Get(paramSourceNodeClassNamespace),
@@ -55,13 +55,13 @@ func createNodeEdgeHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&ne)
 
 	if err == nil {
-		err = createNodeEdgeFunc(dbConn, ne)
+		err = createNodeEdgeFunc(ne)
 	}
 	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeEdge)
 }
 
 func readNodeEdgeHandler(w http.ResponseWriter, r *http.Request) {
-	nce, err := readNodeEdgeFunc(dbConn, model.NodeEdgeKey{
+	nce, err := readNodeEdgeFunc(model.NodeEdgeKey{
 		SourceNodeID:                  r.Header.Get(paramSourceNodeID),
 		SourceNodeClassID:             r.Header.Get(paramSourceNodeClassID),
 		SourceNodeClassNamespace:      r.Header.Get(paramSourceNodeClassNamespace),
@@ -84,7 +84,7 @@ func updateNodeEdgeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotUpdateNodeEdge)
 	} else {
-		count, err := updateNodeEdgeFunc(dbConn, model.NodeEdgeKey{
+		count, err := updateNodeEdgeFunc(model.NodeEdgeKey{
 			SourceNodeID:                  r.Header.Get(paramSourceNodeID),
 			SourceNodeClassID:             r.Header.Get(paramSourceNodeClassID),
 			SourceNodeClassNamespace:      r.Header.Get(paramSourceNodeClassNamespace),
@@ -102,7 +102,7 @@ func updateNodeEdgeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteNodeEdgeHandler(w http.ResponseWriter, r *http.Request) {
-	count, err := deleteNodeEdgeFunc(dbConn, model.NodeEdgeKey{
+	count, err := deleteNodeEdgeFunc(model.NodeEdgeKey{
 		SourceNodeID:                  r.Header.Get(paramSourceNodeID),
 		SourceNodeClassID:             r.Header.Get(paramSourceNodeClassID),
 		SourceNodeClassNamespace:      r.Header.Get(paramSourceNodeClassNamespace),

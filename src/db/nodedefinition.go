@@ -18,20 +18,20 @@
 package db
 
 import (
-	"database/sql"
 	"github.com/nextmetaphor/definition-graph/definition"
 	"github.com/rs/zerolog/log"
 	"strings"
 )
 
-func StoreNodeSpecificationWithoutEdges(db *sql.DB, ns *definition.NodeSpecification) error {
-	nodeStmt, err := db.Prepare(insertNodeSQL)
+func StoreNodeSpecificationWithoutEdges(ns *definition.NodeSpecification) error {
+	c := getDBConn()
+	nodeStmt, err := c.Prepare(insertNodeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotPrepareNodeStmt)
 		return err
 	}
 
-	attributeStmt, err := db.Prepare(insertNodeAttributeSQL)
+	attributeStmt, err := c.Prepare(insertNodeAttributeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotPrepareNodeAttributeStmt)
 		return err
@@ -63,8 +63,9 @@ func StoreNodeSpecificationWithoutEdges(db *sql.DB, ns *definition.NodeSpecifica
 	return nil
 }
 
-func StoreNodeSpecificationOnlyEdges(db *sql.DB, ns *definition.NodeSpecification) error {
-	edgeStmt, err := db.Prepare(insertNodeEdgeSQL)
+func StoreNodeSpecificationOnlyEdges(ns *definition.NodeSpecification) error {
+	c := getDBConn()
+	edgeStmt, err := c.Prepare(insertNodeEdgeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotPrepareNodeEdgeStmt)
 		return err

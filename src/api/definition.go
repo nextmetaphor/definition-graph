@@ -29,9 +29,9 @@ const (
 
 func loadDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
 	var e error
-	if e = core.LoadNodeClassDefinitions([]string{"definition/nodeClass"}, "yaml", dbConn); e == nil {
-		if e = core.LoadNodeDefinitionsWithoutEdges([]string{"definition/node"}, "yaml", dbConn); e == nil {
-			e = core.LoadNodeDefinitionsOnlyEdges([]string{"definition/node"}, "yaml", dbConn)
+	if e = core.LoadNodeClassDefinitions([]string{"definition/nodeClass"}, "yaml"); e == nil {
+		if e = core.LoadNodeDefinitionsWithoutEdges([]string{"definition/node"}, "yaml"); e == nil {
+			e = core.LoadNodeDefinitionsOnlyEdges([]string{"definition/node"}, "yaml")
 		}
 	}
 

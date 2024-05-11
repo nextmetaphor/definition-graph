@@ -18,7 +18,6 @@
 package db
 
 import (
-	"database/sql"
 	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
 )
@@ -27,10 +26,11 @@ const (
 	selectNamespacesSQL = `SELECT DISTINCT Namespace from NodeClass order by Namespace`
 )
 
-func SelectNamespaces(db *sql.DB) (namespaces model.Namespaces, err error) {
+func SelectNamespaces() (namespaces model.Namespaces, err error) {
+	c := getDBConn()
 	namespaces = model.Namespaces{}
 
-	namespaceRows, err := db.Query(selectNamespacesSQL)
+	namespaceRows, err := c.Query(selectNamespacesSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNamespaceSelectStmt)
 		return

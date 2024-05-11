@@ -19,6 +19,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
 )
@@ -112,6 +113,9 @@ const (
 
 	databaseDriver = "sqlite3"
 
+	errorDatabaseAlreadyOpen = "database is already open"
+
+	logDatabaseAlreadyOpen     = "database [%s] is already open"
 	logCannotOpenDatabase      = "cannot open database [%s]"
 	logCannotDropDatabase      = "cannot drop database schema"
 	logCannotCreateDatabase    = "cannot create database schema"
@@ -126,35 +130,50 @@ func boolToInt(b bool) int {
 	return 0
 }
 
-func OpenDatabase() (*sql.DB, error) {
+func OpenDatabase() error {
+	// check if database is already open, return error if this is the case
+	db := getDBConn()
+	if db != nil {
+		err := errors.New(errorDatabaseAlreadyOpen)
+		log.Error().Err(err).Msgf(logDatabaseAlreadyOpen, databaseName)
+		return err
+	}
+
+	// open the database
 	db, err := sql.Open(databaseDriver, fmt.Sprintf("./%s", databaseName))
 	if err != nil {
 		log.Error().Err(err).Msgf(logCannotOpenDatabase, databaseName)
-		return nil, err
+		return err
 	}
+	setDBConn(db)
 
 	_, err = db.Exec(dropDatabaseSchemeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotDropDatabase)
-		return nil, err
+		return err
 	}
 
 	_, err = db.Exec(enableForeignKeysSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotEnableForeignKeys)
-		return nil, err
+		return err
 	}
 
 	_, err = db.Exec(createDatabaseSchemaSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotCreateDatabase)
-		return nil, err
+		return err
 	}
 
-	return db, nil
+	return nil
 }
 
-func CloseDatabase(db *sql.DB) error {
+func CloseDatabase() error {
+	db := getDBConn()
+	if db == nil {
+		return nil
+	}
+
 	err := db.Close()
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotCloseDatabase)

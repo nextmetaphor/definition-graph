@@ -18,7 +18,6 @@
 package core
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/nextmetaphor/definition-graph/db"
 	"github.com/nextmetaphor/definition-graph/definition"
@@ -124,14 +123,14 @@ func loadNodeSpecificationFromFile(filename string) (*definition.NodeSpecificati
 	return spec, nil
 }
 
-func LoadNodeClassDefinitions(sourceDir []string, fileExtension string, conn *sql.DB) error {
+func LoadNodeClassDefinitions(sourceDir []string, fileExtension string) error {
 	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
 		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
 
 		spec, err := loadNodeClassSpecificationFromFile(filePath)
 		if (err == nil) && (spec != nil) {
 			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
-			err = db.StoreNodeClassSpecification(conn, spec)
+			err = db.StoreNodeClassSpecification(spec)
 		} else {
 			log.Warn().Msgf(logSkippingFile, filePath, err)
 		}
@@ -140,14 +139,14 @@ func LoadNodeClassDefinitions(sourceDir []string, fileExtension string, conn *sq
 	})
 }
 
-func LoadNodeDefinitionsWithoutEdges(sourceDir []string, fileExtension string, conn *sql.DB) error {
+func LoadNodeDefinitionsWithoutEdges(sourceDir []string, fileExtension string) error {
 	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
 		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
 
 		spec, err := loadNodeSpecificationFromFile(filePath)
 		if (err == nil) && (spec != nil) {
 			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
-			err = db.StoreNodeSpecificationWithoutEdges(conn, spec)
+			err = db.StoreNodeSpecificationWithoutEdges(spec)
 		} else {
 			log.Warn().Msgf(logSkippingFile, filePath, err)
 		}
@@ -156,7 +155,7 @@ func LoadNodeDefinitionsWithoutEdges(sourceDir []string, fileExtension string, c
 	})
 }
 
-func LoadNodeDefinitionsOnlyEdges(sourceDir []string, fileExtension string, conn *sql.DB) error {
+func LoadNodeDefinitionsOnlyEdges(sourceDir []string, fileExtension string) error {
 	return loadDefinitions(sourceDir, fileExtension, func(filePath string, _ os.FileInfo) (err error) {
 		log.Debug().Msg(fmt.Sprintf(logAboutToLoadFile, filePath))
 
@@ -164,7 +163,7 @@ func LoadNodeDefinitionsOnlyEdges(sourceDir []string, fileExtension string, conn
 		if (err == nil) && (spec != nil) {
 
 			log.Debug().Msg(fmt.Sprintf(logSuccessfullyLoadedFile, filePath))
-			err = db.StoreNodeSpecificationOnlyEdges(conn, spec)
+			err = db.StoreNodeSpecificationOnlyEdges(spec)
 		} else {
 			log.Warn().Msgf(logSkippingFile, filePath, err)
 		}

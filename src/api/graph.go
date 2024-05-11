@@ -28,11 +28,11 @@ const (
 )
 
 func nodeClassGraphHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := db.SelectNodeClassGraph(dbConn)
+	data, err := db.SelectNodeClassGraph()
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClassGraph)
 }
 
 func nodeGraphHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := db.SelectNodeGraph(dbConn)
+	data, err := db.SelectNodeGraph()
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeGraph)
 }

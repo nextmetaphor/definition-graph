@@ -18,7 +18,6 @@
 package db
 
 import (
-	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nextmetaphor/definition-graph/model"
 	"github.com/rs/zerolog/log"
@@ -41,9 +40,10 @@ const (
 )
 
 // SelectNodeClass selects all NodeClass records from the database.
-func SelectNodeClass(db *sql.DB) (nodeClasses model.NodeClasses, err error) {
+func SelectNodeClass() (nodeClasses model.NodeClasses, err error) {
+	c := getDBConn()
 	nodeClasses = model.NodeClasses{}
-	nodeClassRows, err := db.Query(selectNodeClassSQL)
+	nodeClassRows, err := c.Query(selectNodeClassSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
 		return
@@ -60,7 +60,8 @@ func SelectNodeClass(db *sql.DB) (nodeClasses model.NodeClasses, err error) {
 	return
 }
 
-func CreateNodeClass(c *sql.DB, nc model.NodeClass) (e error) {
+func CreateNodeClass(nc model.NodeClass) (e error) {
+	c := getDBConn()
 	s, e := c.Prepare(createNodeClassSQL)
 	if e != nil {
 		return
@@ -70,7 +71,8 @@ func CreateNodeClass(c *sql.DB, nc model.NodeClass) (e error) {
 	return
 }
 
-func ReadNodeClass(c *sql.DB, key model.NodeClassKey) (nc *model.NodeClass, e error) {
+func ReadNodeClass(key model.NodeClassKey) (nc *model.NodeClass, e error) {
+	c := getDBConn()
 	rows, e := c.Query(readNodeClassSQL, key.ID, key.Namespace)
 	if e != nil {
 		return
@@ -85,7 +87,8 @@ func ReadNodeClass(c *sql.DB, key model.NodeClassKey) (nc *model.NodeClass, e er
 	return
 }
 
-func UpdateNodeClass(c *sql.DB, key model.NodeClassKey, nc model.NodeClass) (count int64, e error) {
+func UpdateNodeClass(key model.NodeClassKey, nc model.NodeClass) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(updateNodeClassSQL)
 	if e != nil {
 		return
@@ -96,7 +99,8 @@ func UpdateNodeClass(c *sql.DB, key model.NodeClassKey, nc model.NodeClass) (cou
 	return
 }
 
-func DeleteNodeClass(c *sql.DB, key model.NodeClassKey) (count int64, e error) {
+func DeleteNodeClass(key model.NodeClassKey) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(deleteNodeClassSQL)
 	if e != nil {
 		return

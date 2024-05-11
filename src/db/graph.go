@@ -18,7 +18,6 @@
 package db
 
 import (
-	"database/sql"
 	"github.com/nextmetaphor/definition-graph/definition"
 	"github.com/rs/zerolog/log"
 )
@@ -27,8 +26,9 @@ const (
 	selectGraphNodeEdgeSQL = `SELECT SourceNodeID, SourceNodeClassID, SourceNodeClassNamespace, DestinationNodeID, DestinationNodeClassID, DestinationNodeClassNamespace, Relationship from NodeEdge;`
 )
 
-func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
-	nodeRows, err := db.Query(selectNodeClassSQL)
+func SelectNodeClassGraph() (graph definition.Graph, err error) {
+	c := getDBConn()
+	nodeRows, err := c.Query(selectNodeClassSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassSelectStmt)
 		return
@@ -44,7 +44,7 @@ func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
 		graph.Nodes = append(graph.Nodes, node)
 	}
 
-	linkRows, err := db.Query(selectNodeClassEdgeSQL)
+	linkRows, err := c.Query(selectNodeClassEdgeSQL)
 
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeClassEdgeSelectStmt)
@@ -63,8 +63,9 @@ func SelectNodeClassGraph(db *sql.DB) (graph definition.Graph, err error) {
 	return
 }
 
-func SelectNodeGraph(db *sql.DB) (graph definition.Graph, err error) {
-	nodeRows, err := db.Query(selectNodeSQL)
+func SelectNodeGraph() (graph definition.Graph, err error) {
+	c := getDBConn()
+	nodeRows, err := c.Query(selectNodeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
 		return
@@ -83,7 +84,7 @@ func SelectNodeGraph(db *sql.DB) (graph definition.Graph, err error) {
 		graph.Nodes = append(graph.Nodes, node)
 	}
 
-	linkRows, err := db.Query(selectGraphNodeEdgeSQL)
+	linkRows, err := c.Query(selectGraphNodeEdgeSQL)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeEdgeSelectStmt)
 		return

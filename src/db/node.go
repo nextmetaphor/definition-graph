@@ -49,14 +49,15 @@ const (
 	logCannotQueryNodeAttributeSelectStmt = "cannot query NodeAttribute select statement"
 )
 
-func SelectNodes(db *sql.DB, nodeClassKey model.NodeClassKey) (nodes model.Nodes, err error) {
+func SelectNodes(nodeClassKey model.NodeClassKey) (nodes model.Nodes, err error) {
+	c := getDBConn()
 	nodes = model.Nodes{}
 
 	var nodeRows *sql.Rows
 	if strings.TrimSpace(nodeClassKey.Namespace) == "" {
-		nodeRows, err = db.Query(selectNodeSQL)
+		nodeRows, err = c.Query(selectNodeSQL)
 	} else {
-		nodeRows, err = db.Query(selectNodeSQLByClass, nodeClassKey.ID, nodeClassKey.Namespace)
+		nodeRows, err = c.Query(selectNodeSQLByClass, nodeClassKey.ID, nodeClassKey.Namespace)
 	}
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
@@ -76,7 +77,8 @@ func SelectNodes(db *sql.DB, nodeClassKey model.NodeClassKey) (nodes model.Nodes
 	return
 }
 
-func CreateNode(c *sql.DB, nc model.Node) (e error) {
+func CreateNode(nc model.Node) (e error) {
+	c := getDBConn()
 	s, e := c.Prepare(createNodeSQL)
 	if e != nil {
 		return
@@ -85,9 +87,10 @@ func CreateNode(c *sql.DB, nc model.Node) (e error) {
 
 	return
 }
-func ReadNode(db *sql.DB, nodeKey model.NodeKey) (node *model.Node, err error) {
+func ReadNode(nodeKey model.NodeKey) (node *model.Node, err error) {
+	c := getDBConn()
 	var nodeRows *sql.Rows
-	nodeRows, err = db.Query(selectNodeSQLByID, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
+	nodeRows, err = c.Query(selectNodeSQLByID, nodeKey.ID, nodeKey.NodeClassID, nodeKey.NodeClassNamespace)
 	if err != nil {
 		log.Error().Err(err).Msg(logCannotQueryNodeSelectStmt)
 		return
@@ -102,7 +105,8 @@ func ReadNode(db *sql.DB, nodeKey model.NodeKey) (node *model.Node, err error) {
 	return
 }
 
-func UpdateNode(c *sql.DB, key model.NodeKey, nc model.Node) (count int64, e error) {
+func UpdateNode(key model.NodeKey, nc model.Node) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(updateNodeSQL)
 	if e != nil {
 		return
@@ -113,7 +117,8 @@ func UpdateNode(c *sql.DB, key model.NodeKey, nc model.Node) (count int64, e err
 	return
 }
 
-func DeleteNode(c *sql.DB, key model.NodeKey) (count int64, e error) {
+func DeleteNode(key model.NodeKey) (count int64, e error) {
+	c := getDBConn()
 	s, e := c.Prepare(deleteNodeSQL)
 	if e != nil {
 		return

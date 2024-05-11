@@ -43,12 +43,12 @@ var (
 )
 
 func selectNamespaceHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNamespacesFunc(dbConn)
+	data, err := selectNamespacesFunc()
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNamespaces)
 }
 
 func selectNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNodeClassFunc(dbConn)
+	data, err := selectNodeClassFunc()
 	writeHTTPResponse(http.StatusOK, data, err, w, logCannotSelectNodeClass)
 }
 
@@ -57,13 +57,13 @@ func createNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&nc)
 
 	if err == nil {
-		err = createNodeClassFunc(dbConn, nc)
+		err = createNodeClassFunc(nc)
 	}
 	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeClass)
 }
 
 func readNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	nc, err := readNodeClassFunc(dbConn, model.NodeClassKey{
+	nc, err := readNodeClassFunc(model.NodeClassKey{
 		ID:        r.Header.Get(paramID),
 		Namespace: r.Header.Get(paramNamespace),
 	})
@@ -81,7 +81,7 @@ func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotReadNodeClass)
 	} else {
-		count, err := updateNodeClassFunc(dbConn, model.NodeClassKey{
+		count, err := updateNodeClassFunc(model.NodeClassKey{
 			ID:        r.Header.Get(paramID),
 			Namespace: r.Header.Get(paramNamespace),
 		}, nc)
@@ -94,7 +94,7 @@ func updateNodeClassHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteNodeClassHandler(w http.ResponseWriter, r *http.Request) {
-	count, err := deleteNodeClassFunc(dbConn, model.NodeClassKey{
+	count, err := deleteNodeClassFunc(model.NodeClassKey{
 		ID:        r.Header.Get(paramID),
 		Namespace: r.Header.Get(paramNamespace),
 	})

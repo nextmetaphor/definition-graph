@@ -18,7 +18,6 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -88,10 +87,6 @@ const (
 	pathDefinitionRoot = "/" + entityDefinition
 )
 
-var (
-	dbConn *sql.DB
-)
-
 func preflightHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO - sort this out
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
@@ -122,9 +117,7 @@ func writeHTTPResponse(returnCode int, data any, err error, w http.ResponseWrite
 	}
 }
 
-func Listen(host string, port int, conn *sql.DB) {
-	dbConn = conn
-
+func Listen(host string, port int) {
 	mux := http.NewServeMux()
 
 	// namespace functions

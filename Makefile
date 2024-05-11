@@ -16,7 +16,7 @@ build:	## build definition-graph using a docker build container
 test:	## test definition-graph using a docker test container
 	docker run --rm $(docker_dir_args) ./test.sh
 
-docker-build: 	## build definition-graph docker image
+docker-build: build	## build definition-graph docker image
 	docker build --tag nextmetaphor/definition-graph:latest docker -f docker/DockerfileRun
 
 docker-run: docker-build ## run definition-graph docker image

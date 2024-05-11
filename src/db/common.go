@@ -15,28 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cmd
+package db
 
-import (
-	"github.com/nextmetaphor/definition-graph/api"
-	"github.com/nextmetaphor/definition-graph/db"
-	"github.com/spf13/cobra"
+import "database/sql"
+
+var (
+	dbConn *sql.DB
 )
 
-func init() {
-	rootCmd.AddCommand(apiCmd)
-	apiCmd.Flags().IntVarP(&apiServerPort, flagAPIPort, flagAPIPortShorthand, flagAPIPortDefault, flagAPIPortUsage)
-	apiCmd.Flags().StringVarP(&apiServerHost, flagAPIAddress, flagAPIAddressShorthand, flagAPIAddressDefault, flagAPIAddressUsage)
+func getDBConn() *sql.DB {
+	return dbConn
 }
 
-var apiCmd = &cobra.Command{
-	Use:   commandAPIUse,
-	Short: commandAPIShort,
-	Run: func(cmd *cobra.Command, args []string) {
-		db.OpenDatabase()
-
-		defer db.CloseDatabase()
-
-		api.Listen(apiServerHost, apiServerPort)
-	},
+func setDBConn(c *sql.DB) {
+	dbConn = c
 }

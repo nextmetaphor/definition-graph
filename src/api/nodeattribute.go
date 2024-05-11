@@ -42,7 +42,7 @@ var (
 )
 
 func selectNodeAttributeHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := selectNodeAttributeFunc(dbConn, model.NodeKey{
+	data, err := selectNodeAttributeFunc(model.NodeKey{
 		ID:                 r.Header.Get(paramNodeID),
 		NodeClassID:        r.Header.Get(paramNodeClassID),
 		NodeClassNamespace: r.Header.Get(paramNodeClassNamespace),
@@ -55,13 +55,13 @@ func createNodeAttributeHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&na)
 
 	if err == nil {
-		err = createNodeAttributeFunc(dbConn, na)
+		err = createNodeAttributeFunc(na)
 	}
 	writeHTTPResponse(http.StatusOK, nil, err, w, logCannotCreateNodeAttribute)
 }
 
 func readNodeAttributeHandler(w http.ResponseWriter, r *http.Request) {
-	na, err := readNodeAttributeFunc(dbConn, model.NodeAttributeKey{
+	na, err := readNodeAttributeFunc(model.NodeAttributeKey{
 		NodeID:               r.Header.Get(paramNodeID),
 		NodeClassID:          r.Header.Get(paramNodeClassID),
 		NodeClassNamespace:   r.Header.Get(paramNodeClassNamespace),
@@ -81,7 +81,7 @@ func updateNodeAttributeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeHTTPResponse(http.StatusOK, nil, err, w, logCannotUpdateNodeAttribute)
 	} else {
-		count, err := updateNodeAttributeFunc(dbConn, model.NodeAttributeKey{
+		count, err := updateNodeAttributeFunc(model.NodeAttributeKey{
 			NodeID:               r.Header.Get(paramNodeID),
 			NodeClassID:          r.Header.Get(paramNodeClassID),
 			NodeClassNamespace:   r.Header.Get(paramNodeClassNamespace),
@@ -96,7 +96,7 @@ func updateNodeAttributeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteNodeAttributeHandler(w http.ResponseWriter, r *http.Request) {
-	count, err := deleteNodeAttributeFunc(dbConn, model.NodeAttributeKey{
+	count, err := deleteNodeAttributeFunc(model.NodeAttributeKey{
 		NodeID:               r.Header.Get(paramNodeID),
 		NodeClassID:          r.Header.Get(paramNodeClassID),
 		NodeClassNamespace:   r.Header.Get(paramNodeClassNamespace),
