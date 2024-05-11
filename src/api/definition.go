@@ -23,21 +23,31 @@ import (
 )
 
 const (
-	logCannotLoadDefinitions = "cannot load definitions"
-	logCannotSaveDefinitions = "cannot save definitions"
+	logCannotLoadNodeClassDefinitions = "cannot load nodeClass definitions"
+	logCannotSaveNodeClassDefinitions = "cannot save nodeClass definitions"
+	logCannotLoadNodeDefinitions      = "cannot load node definitions"
+	logCannotSaveNodeDefinitions      = "cannot save node definitions"
 )
 
-func loadDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
-	var e error
-	if e = core.LoadNodeClassDefinitions([]string{"definition/nodeClass"}, "yaml"); e == nil {
-		if e = core.LoadNodeDefinitionsWithoutEdges([]string{"definition/node"}, "yaml"); e == nil {
-			e = core.LoadNodeDefinitionsOnlyEdges([]string{"definition/node"}, "yaml")
-		}
-	}
+func loadNodeClassDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
+	e := core.LoadNodeClassDefinitions(r.Header.Values(paramNodeClassDefinitionsDirectory), r.Header.Get(paramDefinitionFormat))
 
-	writeHTTPResponse(http.StatusOK, nil, e, w, logCannotLoadDefinitions)
+	writeHTTPResponse(http.StatusOK, nil, e, w, logCannotLoadNodeClassDefinitions)
 }
 
-func saveDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
+func saveNodeClassDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO
+}
+
+func loadNodeDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
+	var e error
+	if e = core.LoadNodeDefinitionsWithoutEdges(r.Header.Values(paramNodeDefinitionsDirectory), r.Header.Get(paramDefinitionFormat)); e == nil {
+		e = core.LoadNodeDefinitionsOnlyEdges(r.Header.Values(paramNodeDefinitionsDirectory), r.Header.Get(paramDefinitionFormat))
+	}
+
+	writeHTTPResponse(http.StatusOK, nil, e, w, logCannotLoadNodeDefinitions)
+}
+
+func saveNodeDefinitionsHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO
 }

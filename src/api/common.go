@@ -28,15 +28,16 @@ import (
 const (
 	logAPIServerListening = "API Server listening at %s"
 
-	entityNamespace          = "namespace"
-	entityNodeClass          = "nodeclass"
-	entityNodeClassEdge      = "nodeclassedge"
-	entityNodeClassAttribute = "nodeclassattribute"
-	entityNode               = "node"
-	entityNodeAttribute      = "nodeattribute"
-	entityNodeEdge           = "nodeedge"
-	entityGraph              = "graph"
-	entityDefinition         = "definition"
+	entityNamespace           = "namespace"
+	entityNodeClass           = "nodeclass"
+	entityNodeClassEdge       = "nodeclassedge"
+	entityNodeClassAttribute  = "nodeclassattribute"
+	entityNode                = "node"
+	entityNodeAttribute       = "nodeattribute"
+	entityNodeEdge            = "nodeedge"
+	entityGraph               = "graph"
+	entityNodeClassDefinition = "nodeclassdefinition"
+	entityNodeDefinition      = "nodedefinition"
 
 	// HTTP header parameter constants
 	paramID                            = "ID"
@@ -53,6 +54,9 @@ const (
 	paramDestinationNodeClassNamespace = "destinationNodeClassNamespace"
 	paramDestinationNodeNamespace      = "destinationNodeNamespace"
 	paramRelationship                  = "relationship"
+	paramNodeClassDefinitionsDirectory = "nodeClassDefinitionsDirectory"
+	paramNodeDefinitionsDirectory      = "nodeDefinitionsDirectory"
+	paramDefinitionFormat              = "definitionFormat"
 
 	// Namespace URL paths
 	pathNamespaceRoot = "/" + entityNamespace
@@ -84,7 +88,8 @@ const (
 	pathNodeClassGraph = "/" + entityGraph + "/" + entityNodeClass
 	pathNodeGraph      = "/" + entityGraph + "/" + entityNode
 
-	pathDefinitionRoot = "/" + entityDefinition
+	pathNodeClassDefinitionRoot = "/" + entityNodeClassDefinition
+	pathNodeDefinitionRoot      = "/" + entityNodeDefinition
 )
 
 func preflightHandler(w http.ResponseWriter, r *http.Request) {
@@ -185,8 +190,10 @@ func Listen(host string, port int) {
 	mux.HandleFunc(http.MethodGet+" "+pathNodeGraph, nodeGraphHandler)
 
 	// definition functions
-	mux.HandleFunc(http.MethodPost+" "+pathDefinitionRoot, loadDefinitionsHandler)
-	mux.HandleFunc(http.MethodGet+" "+pathDefinitionRoot, saveDefinitionsHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeClassDefinitionRoot, loadNodeClassDefinitionsHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeClassDefinitionRoot, saveNodeClassDefinitionsHandler)
+	mux.HandleFunc(http.MethodPost+" "+pathNodeDefinitionRoot, loadNodeDefinitionsHandler)
+	mux.HandleFunc(http.MethodGet+" "+pathNodeDefinitionRoot, saveNodeDefinitionsHandler)
 
 	listenAddress := host + ":" + strconv.Itoa(port)
 	log.Info().Msg(fmt.Sprintf(logAPIServerListening, listenAddress))
