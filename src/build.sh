@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#export GOOS=linux
-#export GARCH=amd64
 export CGO_ENABLED=1
 
 #apk add build-base
@@ -20,4 +18,4 @@ printf "\n### go vet ###\n"
 #go vet ./...
 
 printf "\n### go build ###\n"
-go build -o definition-graph
+go build -o grfn
