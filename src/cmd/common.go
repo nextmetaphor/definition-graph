@@ -37,8 +37,11 @@ const (
 	commandAPIUse   = "api"
 	commandAPIShort = "Start the " + appName + " API server"
 
-	commandLoadUse   = "load"
-	commandLoadShort = "load nodeClass or node definition files"
+	commandDefineUse   = "define"
+	commandDefineShort = "load nodeClass definition files"
+
+	commandPopulateUse   = "populate"
+	commandPopulateShort = "load node definition files"
 
 	flagAPIAddress          = "address"
 	flagAPIAddressShorthand = "a"
@@ -49,10 +52,6 @@ const (
 	flagAPIPortShorthand = "p"
 	flagAPIPortDefault   = 8080
 	flagAPIPortUsage     = "port for api"
-
-	flagLoadType          = "type"
-	flagLoadTypeShorthand = "t"
-	flagLoadTypeUsage     = "type of definition file to load (nc=nodeClass or n=node)"
 
 	flagDefinitionDirectory          = "dir"
 	flagDefinitionDirectoryShorthand = "d"
@@ -81,9 +80,10 @@ var (
 	// variable for flagAPIAddress parameter
 	apiServerHost string
 
-	loadDefinitionType      string
-	loadDefinitionDirectory string
-	loadDefinitionFormat    string
+	defineDefinitionDirectory   string
+	defineDefinitionFormat      string
+	populateDefinitionDirectory string
+	populateDefinitionFormat    string
 )
 
 // Execute TODO

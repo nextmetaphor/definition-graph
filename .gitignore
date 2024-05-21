@@ -2,5 +2,6 @@
 **/*.sqlite
 **/*.db
 **/definition-graph
+**/grfn
 profile.cov
 .buildcache

@@ -4,7 +4,8 @@ RUN apk add --no-cache sqlite && addgroup gdfngrph && adduser -D -g "definition-
 # copy the required files into the installation directory
 COPY --chown=dfngrph:gdfngrph ./utils/* /opt/definition-graph/
 # create symlink in /usr/bin to the yaml-graph binary
-RUN ln -s /opt/definition-graph/definition-graph /usr/bin/definition-graph
+RUN chmod u+x /opt/definition-graph/docker-entrypoint.sh
+RUN ln -s /opt/definition-graph/grfn /usr/bin/grfn
 USER dfngrph
 WORKDIR /home/dfngraph
-ENTRYPOINT ["/opt/definition-graph/definition-graph"]
+ENTRYPOINT ["/bin/sh", "-c", "/opt/definition-graph/docker-entrypoint.sh; /bin/sh"]

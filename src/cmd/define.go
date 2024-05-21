@@ -25,25 +25,16 @@ import (
 
 func init() {
 	rootCmd.AddCommand(loadCmd)
-	loadCmd.Flags().StringVarP(&loadDefinitionType, flagLoadType, flagLoadTypeShorthand, "", flagLoadTypeUsage)
-	loadCmd.Flags().StringVarP(&loadDefinitionDirectory, flagDefinitionDirectory, flagDefinitionDirectoryShorthand, "", flagDefinitionDirectoryUsage)
-	loadCmd.Flags().StringVarP(&loadDefinitionFormat, flagDefinitionFormat, flagDefinitionFormatShorthand, flagDefinitionFormatDefault, flagDefinitionFormatUsage)
+	loadCmd.Flags().StringVarP(&defineDefinitionDirectory, flagDefinitionDirectory, flagDefinitionDirectoryShorthand, "", flagDefinitionDirectoryUsage)
+	loadCmd.Flags().StringVarP(&defineDefinitionFormat, flagDefinitionFormat, flagDefinitionFormatShorthand, flagDefinitionFormatDefault, flagDefinitionFormatUsage)
 }
 
 var loadCmd = &cobra.Command{
-	Use:   commandLoadUse,
-	Short: commandLoadShort,
+	Use:   commandDefineUse,
+	Short: commandDefineShort,
 	Run: func(cmd *cobra.Command, args []string) {
 		db.OpenDatabase()
 		defer db.CloseDatabase()
-		if loadDefinitionType == "nc" {
-			core.LoadNodeClassDefinitions([]string{loadDefinitionDirectory}, loadDefinitionFormat)
-		} else {
-			var e error
-			if e = core.LoadNodeDefinitionsWithoutEdges([]string{loadDefinitionDirectory}, loadDefinitionFormat); e == nil {
-				e = core.LoadNodeDefinitionsOnlyEdges([]string{loadDefinitionDirectory}, loadDefinitionFormat)
-			}
-
-		}
+		core.LoadNodeClassDefinitions([]string{defineDefinitionDirectory}, defineDefinitionFormat)
 	},
 }
