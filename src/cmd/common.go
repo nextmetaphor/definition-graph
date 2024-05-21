@@ -38,10 +38,10 @@ const (
 	commandAPIShort = "Start the " + appName + " API server"
 
 	commandDefineUse   = "define"
-	commandDefineShort = "load nodeClass definition files"
+	commandDefineShort = "Load nodeClass definition files from a specified directory"
 
 	commandPopulateUse   = "populate"
-	commandPopulateShort = "load node definition files"
+	commandPopulateShort = "Load node definition files from a specified directory"
 
 	flagAPIAddress          = "address"
 	flagAPIAddressShorthand = "a"
