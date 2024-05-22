@@ -27,6 +27,7 @@ func init() {
 	rootCmd.AddCommand(loadCmd)
 	loadCmd.Flags().StringVarP(&defineDefinitionDirectory, flagDefinitionDirectory, flagDefinitionDirectoryShorthand, "", flagDefinitionDirectoryUsage)
 	loadCmd.Flags().StringVarP(&defineDefinitionFormat, flagDefinitionFormat, flagDefinitionFormatShorthand, flagDefinitionFormatDefault, flagDefinitionFormatUsage)
+	loadCmd.Flags().BoolVarP(&recreateDatabase, flagRecreateDatabase, flagRecreateDatabaseShorthand, flagRecreateDatabaseDefault, flagRecreateDatabaseUsage)
 }
 
 var loadCmd = &cobra.Command{
@@ -35,6 +36,10 @@ var loadCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db.OpenDatabase()
 		defer db.CloseDatabase()
+		if recreateDatabase {
+			db.DropDatabase()
+			db.CreateDatabase()
+		}
 		core.LoadNodeClassDefinitions([]string{defineDefinitionDirectory}, defineDefinitionFormat)
 	},
 }

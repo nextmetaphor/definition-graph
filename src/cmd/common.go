@@ -62,6 +62,11 @@ const (
 	flagDefinitionFormatDefault   = "yaml"
 	flagDefinitionFormatUsage     = "format of the definition files (yaml or json)"
 
+	flagRecreateDatabase          = "recreateDB"
+	flagRecreateDatabaseShorthand = "c"
+	flagRecreateDatabaseUsage     = "recreate database"
+	flagRecreateDatabaseDefault   = false
+
 	exitCodeRootCmdFailed = 1
 )
 
@@ -84,6 +89,7 @@ var (
 	defineDefinitionFormat      string
 	populateDefinitionDirectory string
 	populateDefinitionFormat    string
+	recreateDatabase            bool
 )
 
 // Execute TODO

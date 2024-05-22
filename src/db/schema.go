@@ -114,7 +114,9 @@ const (
 	databaseDriver = "sqlite3"
 
 	errorDatabaseAlreadyOpen = "database is already open"
+	errorDatabaseNotOpen     = "database is not open"
 
+	logDatabaseNotOpen         = "database is not open"
 	logDatabaseAlreadyOpen     = "database [%s] is already open"
 	logCannotOpenDatabase      = "cannot open database [%s]"
 	logCannotDropDatabase      = "cannot drop database schema"
@@ -128,6 +130,46 @@ func boolToInt(b bool) int {
 		return 1
 	}
 	return 0
+}
+
+func DropDatabase() error {
+	db := getDBConn()
+	if db == nil {
+		err := errors.New(errorDatabaseNotOpen)
+		log.Error().Err(err).Msg(logDatabaseNotOpen)
+		return err
+	}
+
+	_, err := db.Exec(dropDatabaseSchemeSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotDropDatabase)
+		return err
+	}
+
+	return nil
+}
+
+func CreateDatabase() error {
+	db := getDBConn()
+	if db == nil {
+		err := errors.New(errorDatabaseNotOpen)
+		log.Error().Err(err).Msg(logDatabaseNotOpen)
+		return err
+	}
+
+	_, err := db.Exec(enableForeignKeysSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotEnableForeignKeys)
+		return err
+	}
+
+	_, err = db.Exec(createDatabaseSchemaSQL)
+	if err != nil {
+		log.Error().Err(err).Msg(logCannotCreateDatabase)
+		return err
+	}
+
+	return nil
 }
 
 func OpenDatabase() error {
@@ -146,24 +188,6 @@ func OpenDatabase() error {
 		return err
 	}
 	setDBConn(db)
-
-	_, err = db.Exec(dropDatabaseSchemeSQL)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotDropDatabase)
-		return err
-	}
-
-	_, err = db.Exec(enableForeignKeysSQL)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotEnableForeignKeys)
-		return err
-	}
-
-	_, err = db.Exec(createDatabaseSchemaSQL)
-	if err != nil {
-		log.Error().Err(err).Msg(logCannotCreateDatabase)
-		return err
-	}
 
 	return nil
 }

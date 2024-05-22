@@ -10,3 +10,12 @@ _Note: `definition-graph` is currently still in development and is subject to br
 
 ### Code Package Structure
 ![Code Package Structure](doc/package.jpg)
+
+### Usage
+```shell
+# define the nodeClasses in the database
+grfn define -d definition/nodeClass/ -c true
+
+# populate with nodes in the database
+grfn populate -d definition/node
+```
